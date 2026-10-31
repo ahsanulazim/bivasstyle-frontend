@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+}
+
+@theme {
+  --font-dm-sans: var(--font-dm_sans);
+  --font-hind-siliguri: var(--font-hind-siliguri);
+  --breakpoint-xs: 480px;
+  --color-main: #b30602;
+}
+
+.custom-search {
+  @apply hidden lg:flex! justify-between items-center w-full [&>input]:w-full [&>input]:focus:outline-0 gap-5 border border-main rounded-full p-1 pl-5!;
+}
+
+.btn-main {
+  @apply bg-main text-white hover:text-white/70 border-main;
+}
+
+.btn-main-outline {
+  @apply btn-outline border-main text-main hover:bg-main hover:text-white;
+}
+
+.ql-container {
+  @apply border-none!;
+}
+
+.ql-toolbar {
+  @apply border-none!;
+}
+
+.ql-editor {
+  @apply min-h-50;
+}

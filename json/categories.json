@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Kurti",
+    "image": "/assets/categories/Kurti.jpeg",
+    "link": "/products/kurti"
+  },
+  {
+    "title": "Three Piece",
+    "image": "/assets/categories/Three-piece.jpeg",
+    "link": "/products/three-piece"
+  },
+  {
+    "title": "Two Piece",
+    "image": "/assets/categories/Two-piece.jpeg",
+    "link": "/products/two-piece"
+  },
+  {
+    "title": "Saree",
+    "image": "/assets/categories/shareee.jpeg",
+    "link": "/products/saree"
+  }
+]
