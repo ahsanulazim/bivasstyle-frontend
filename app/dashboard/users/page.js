@@ -7,7 +7,7 @@ const page = () => {
       <Breadcrumbs title="Users" />
       <section className="mb-5">
         <h2 className="font-bold text-2xl">Users</h2>
-        <p className="text-sm opacity-50">All registered users of Oiki</p>
+        <p className="text-sm opacity-50">All registered users of Bivas Style</p>
       </section>
       <section>
         <UsersData />

@@ -12,7 +12,6 @@ const ShippingForm = ({
   ref,
   setIsPending,
   setOrderCompleted,
-  paymentMethod,
 }) => {
   const router = useRouter();
   const {
@@ -78,24 +77,15 @@ const ShippingForm = ({
   const { mutate, isPending } = useMutation({
     mutationFn: createOrder,
     onSuccess: (data) => {
-      if (paymentMethod === "cod") {
-        setOrderCompleted?.(true);
-        queryClient.invalidateQueries({ queryKey: ["orders"] });
-        clearCart();
-        toast.success("Order Placed Successfully");
-        reset();
-        const orderId = data?.order?._id || data?.order?.insertedId || "";
-        router.push(
-          `/cart/checkout/payment-success?orderId=${orderId}&method=cod`,
-        );
-      } else if (paymentMethod === "online") {
-        if (data?.paymentUrl) {
-          setOrderCompleted?.(true);
-          window.location.href = data.paymentUrl;
-        } else {
-          toast.error("Payment URL not found");
-        }
-      }
+      setOrderCompleted?.(true);
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      clearCart();
+      toast.success("Order Placed Successfully");
+      reset();
+      const orderId = data?.order?._id || data?.order?.insertedId || "";
+      router.push(
+        `/cart/checkout/payment-success?orderId=${orderId}&method=cod`,
+      );
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Failed to create order");
@@ -113,7 +103,7 @@ const ShippingForm = ({
       user: newUser ? newUser.user : "guest",
       customer: data,
       products: cartItems,
-      paymentMethod,
+      paymentMethod: "cod",
       couponCode: appliedCoupon?.code || null,
     };
 

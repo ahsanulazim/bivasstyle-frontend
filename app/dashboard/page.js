@@ -4,18 +4,17 @@ import CustomerDashboard from "@/components/dashboard/CustomerDashboard";
 import { MyContext } from "@/context/MyProvider";
 import { useContext } from "react";
 
-const page = () => {
+const DashboardPage = () => {
   const { newUser, loading } = useContext(MyContext);
 
-  return (
-    <>
-      {!loading && newUser?.user?.role === "admin" ? (
-        <AdminDashboard />
-      ) : (
-        <CustomerDashboard />
-      )}
-    </>
+  // Wait for auth to resolve so admins don't see a flash of the customer view
+  if (loading || !newUser) return null;
+
+  return newUser?.user?.role === "admin" ? (
+    <AdminDashboard />
+  ) : (
+    <CustomerDashboard />
   );
 };
 
-export default page;
+export default DashboardPage;

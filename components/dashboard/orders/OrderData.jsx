@@ -8,7 +8,9 @@ import { LuCheck, LuEye, LuSearch, LuTrash2, LuTruck } from "react-icons/lu";
 import OrderDeleteModal from "./OrderDeleteModal";
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
+import { getOrderStatusBadge } from "./orderStatus";
 
 const TABS = [
   { key: "all", label: "All" },
@@ -17,30 +19,31 @@ const TABS = [
   { key: "completed", label: "Completed" },
 ];
 
-const getStatusBadge = (status) => {
-  switch (status) {
-    case "pending":
-      return { color: "badge-warning border-warning", dot: "status-warning", label: "Pending" };
-    case "confirmed":
-      return { color: "badge-info border-info", dot: "status-info", label: "Confirmed" };
-    case "processing":
-      return { color: "badge-info border-info", dot: "status-info", label: "Processing" };
-    case "shipped":
-      return { color: "badge-primary border-primary", dot: "status-primary", label: "Shipped" };
-    case "delivered":
-      return { color: "badge-success border-success", dot: "status-success", label: "Delivered" };
-    case "hold":
-      return { color: "badge-neutral border-neutral", dot: "status-neutral", label: "On Hold" };
-    case "cancelled":
-    default:
-      return { color: "badge-error border-error", dot: "status-error", label: "Cancelled" };
-  }
+const getStatusBadge = getOrderStatusBadge;
+
+const matchesTab = (order, tab) => {
+  if (tab === "unpaid") return order.paymentStatus !== "paid";
+  if (tab === "pending") return order.status === "pending";
+  if (tab === "completed") return order.status === "delivered";
+  return true;
 };
 
 const OrderData = () => {
   const orderRef = useRef(null);
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("all");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  // Active tab lives in the URL (?tab=pending) so it can be linked to and survives refresh
+  const tabParam = searchParams.get("tab");
+  const activeTab = TABS.some((t) => t.key === tabParam) ? tabParam : "all";
+  const setActiveTab = (key) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (key === "all") params.delete("tab");
+    else params.set("tab", key);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [orderId, setOrderId] = useState(null);
 
@@ -64,18 +67,7 @@ const OrderData = () => {
 
   // Tab + Search filtering logic
   const filteredOrders = data?.orders?.filter((order) => {
-    const matchesTab =
-      activeTab === "all"
-        ? true
-        : activeTab === "unpaid"
-          ? order.paymentStatus !== "paid"
-          : activeTab === "pending"
-            ? order.status === "pending"
-            : activeTab === "completed"
-              ? order.status === "delivered"
-              : true;
-
-    if (!matchesTab) return false;
+    if (!matchesTab(order, activeTab)) return false;
 
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
@@ -92,14 +84,21 @@ const OrderData = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div role="tablist" className="tabs tabs-box">
           {TABS.map((tab) => (
-            <a
+            <button
+              type="button"
               key={tab.key}
               role="tab"
+              aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`tab ${activeTab === tab.key ? "tab-active" : ""}`}
             >
               {tab.label}
-            </a>
+              {data?.orders && (
+                <span className="badge badge-xs badge-ghost ml-1.5">
+                  {data.orders.filter((o) => matchesTab(o, tab.key)).length}
+                </span>
+              )}
+            </button>
           ))}
         </div>
         <label className="input rounded-full w-full sm:w-auto">
@@ -169,7 +168,7 @@ const OrderData = () => {
                         </div>
                       </td>
                       <td>
-                        {order.paymentMethod === "cod" ? "COD" : "Zinipay"}
+                        {order.paymentMethod === "cod" || !order.paymentMethod ? "COD" : order.paymentMethod.toUpperCase()}
                       </td>
                       <td>
                         <div

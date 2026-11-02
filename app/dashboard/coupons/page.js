@@ -237,7 +237,7 @@ const CouponsPage = () => {
 
   const generateRandomCode = () => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let result = "OIKI-";
+    let result = "BIVAS-";
     for (let i = 0; i < 5; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }

@@ -4,7 +4,7 @@ import { LuHouse, LuShoppingBag, LuUser } from "react-icons/lu";
 
 const Dock = () => {
   return (
-    <div className="dock bg-main text-neutral-content sticky lg:hidden">
+    <div className="dock bg-main text-neutral-content sticky lg:hidden bottom-0">
       <Link href="/">
         <LuHouse className="size-[1.2em]" />
         <span className="dock-label">Home</span>

@@ -3,7 +3,9 @@ import TakaSymbol from "@/components/ui/TakaSymbol";
 import moment from "moment";
 import { LuPrinter, LuX } from "react-icons/lu";
 
-const OrderInvoiceModal = ({ ref, order }) => {
+const OrderInvoiceModal = ({ ref, modalRef, order }) => {
+  const resolvedRef = modalRef || ref;
+
   const handlePrint = () => {
     window.print();
   };
@@ -13,7 +15,7 @@ const OrderInvoiceModal = ({ ref, order }) => {
   const isPaid = order.paymentStatus === "paid";
 
   return (
-    <dialog ref={ref} className="modal">
+    <dialog ref={resolvedRef} className="modal">
       <div className="modal-box max-w-3xl bg-white text-black p-8 print:shadow-none print:max-w-full print:w-full print:p-0">
         {/* Top Action Bar (Hidden in Print) */}
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 print:hidden">
@@ -23,7 +25,7 @@ const OrderInvoiceModal = ({ ref, order }) => {
               <LuPrinter /> Print Invoice
             </button>
             <button
-              onClick={() => ref.current?.close()}
+              onClick={() => resolvedRef?.current?.close()}
               className="btn btn-sm btn-circle btn-ghost"
             >
               <LuX />
@@ -37,15 +39,15 @@ const OrderInvoiceModal = ({ ref, order }) => {
           <div className="flex justify-between items-start border-b border-gray-300 pb-5">
             <div>
               <img
-                src="/assets/oiki-logo.svg"
-                alt="Oiki Logo"
+                src="/assets/logo.svg"
+                alt="Bivas Style Logo"
                 className="h-12 w-auto mb-2"
               />
-              <p className="font-semibold text-base">Oiki Lifestyle</p>
+              <p className="font-semibold text-base">Bivas Style</p>
               <p className="text-xs text-gray-500">
-                Handcrafted Bengali Apparel &bull; oiki.store
+                Handcrafted Bengali Apparel &bull; bivasstyle.com
               </p>
-              <p className="text-xs text-gray-500">support@oiki.store</p>
+              <p className="text-xs text-gray-500">support@bivasstyle.com</p>
             </div>
             <div className="text-right">
               <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-900">
@@ -204,7 +206,7 @@ const OrderInvoiceModal = ({ ref, order }) => {
 
           {/* Footer */}
           <div className="border-t border-gray-200 pt-4 text-center text-xs text-gray-500">
-            Thank you for shopping with Oiki Lifestyle! For exchanges or queries, please contact us within 3 days of delivery.
+            Thank you for shopping with Bivas Style! For exchanges or queries, please contact us within 3 days of delivery.
           </div>
         </div>
       </div>
@@ -213,4 +215,3 @@ const OrderInvoiceModal = ({ ref, order }) => {
 };
 
 export default OrderInvoiceModal;
-

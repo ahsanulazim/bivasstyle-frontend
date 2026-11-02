@@ -14,7 +14,7 @@ export const generateMetaData = async ({ params }) => {
 
   // Search Engine Meta Headers setup Injection
   return {
-    title: `${productData?.productName} | Oiki Lifestyle`,
+    title: `${productData?.productName} | Bivas Style`,
     description:
       productData?.description ||
       `Buy ${productData?.productName} at the best price online.`,

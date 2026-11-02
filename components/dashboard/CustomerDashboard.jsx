@@ -1,9 +1,12 @@
 "use client";
+
 import { getUserOrders } from "@/api/orderApi";
 import { MyContext } from "@/context/MyProvider";
 import { useQuery } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 import AccountInfo from "./customer-dashboard/AccountInfo";
+import AvailableCouponsCard from "./customer-dashboard/AvailableCouponsCard";
+import CustomerSupportCard from "./customer-dashboard/CustomerSupportCard";
 import OrderOverview from "./customer-dashboard/OrderOverview";
 import OrderTracking from "./customer-dashboard/OrderTracking";
 import RecentOrders from "./customer-dashboard/RecentOrders";
@@ -27,6 +30,7 @@ const CustomerDashboard = () => {
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
+      {/* Left Column: Orders & Summary */}
       <div className="col-span-12 flex flex-col gap-5 md:col-span-7 lg:col-span-8">
         <OrderOverview orders={orders} />
         <RecentOrders
@@ -36,9 +40,13 @@ const CustomerDashboard = () => {
           onSelectOrder={(id) => setSelectedOrderId(id)}
         />
       </div>
+
+      {/* Right Column: Tracking, Account, Coupons & Support */}
       <div className="col-span-12 flex flex-col gap-5 md:col-span-5 lg:col-span-4">
         <OrderTracking order={trackedOrder} />
         <AccountInfo />
+        <AvailableCouponsCard />
+        <CustomerSupportCard />
       </div>
     </div>
   );

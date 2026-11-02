@@ -261,7 +261,7 @@ const Overview = ({ isCheckout, ref, isPending, paymentMethod }) => {
           className={`btn ${isPending ? "" : "btn-main"} w-full`}
         >
           {isPending && <span className="loading loading-spinner"></span>}
-          {paymentMethod === "cod" ? "Confirm Order" : "Pay Now"}
+          Confirm Order
         </button>
       ) : (
         <Link href="/cart/checkout">

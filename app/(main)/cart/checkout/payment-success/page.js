@@ -10,7 +10,6 @@ import { MyContext } from "@/context/MyProvider";
 const PaymentSuccessContent = () => {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
-  const method = searchParams.get("method");
   const { clearCart } = useContext(MyContext);
 
   useEffect(() => {
@@ -18,8 +17,6 @@ const PaymentSuccessContent = () => {
       clearCart();
     }
   }, [clearCart]);
-
-  const isCod = method === "cod";
 
   return (
     <>
@@ -38,7 +35,7 @@ const PaymentSuccessContent = () => {
               <li>
                 <Link href="/cart/checkout">Checkout</Link>
               </li>
-              <li>{isCod ? "Order Placed" : "Payment Success"}</li>
+              <li>Order Placed</li>
             </ul>
           </div>
         </div>
@@ -49,7 +46,7 @@ const PaymentSuccessContent = () => {
             <LuCheck className="text-3xl" />
           </div>
           <h2 className="text-2xl text-success font-bold text-center">
-            {isCod ? "Order Placed Successfully!" : "Payment Successful!"}
+            Order Placed Successfully!
           </h2>
 
           {orderId && (
@@ -59,9 +56,7 @@ const PaymentSuccessContent = () => {
           )}
 
           <p className="text-center text-sm max-w-md text-base-content/80">
-            {isCod
-              ? "Thank you for your order! We have received your order and our team will contact you shortly to confirm delivery."
-              : "Your payment has been processed successfully. We have received your order and are preparing it for delivery."}
+            Thank you for your order! We have received your order (Cash on Delivery) and our team will contact you shortly to confirm delivery.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center mt-2">
@@ -79,9 +74,9 @@ const PaymentSuccessContent = () => {
             Need help? Contact our support team at{" "}
             <a
               className="link text-main link-hover"
-              href="mailto:support@oiki.store"
+              href="mailto:support@bivasstyle.com"
             >
-              support@oiki.store
+              support@bivasstyle.com
             </a>
           </p>
         </PaymentCard>

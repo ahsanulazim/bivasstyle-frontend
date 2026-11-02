@@ -18,10 +18,10 @@ const hind_siliguri = Hind_Siliguri({
 });
 
 export const metadata = {
-  title: "Oiki",
+  title: "Bivas Style",
   description: "Muslim Fashion",
   icons: {
-    icon: "/assets/oiki-icon.svg",
+    icon: "/assets/logo.svg",
   },
 };
 

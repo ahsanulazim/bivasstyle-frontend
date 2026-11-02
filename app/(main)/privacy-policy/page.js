@@ -2,8 +2,8 @@ import Link from "next/link";
 import { LuHouse } from "react-icons/lu";
 
 export const metadata = {
-  title: "Privacy Policy & Terms | Oiki Lifestyle",
-  description: "Privacy Policy and Terms of Service for Oiki Lifestyle.",
+  title: "Privacy Policy & Terms | Bivas Style",
+  description: "Privacy Policy and Terms of Service for Bivas Style.",
 };
 
 const PrivacyPolicyPage = () => {
@@ -25,7 +25,7 @@ const PrivacyPolicyPage = () => {
           Privacy Policy &amp; Terms of Service
         </h1>
         <p className="opacity-80">
-          Oiki Lifestyle respects your privacy and is committed to protecting the personal data you share with us when shopping on <strong>oiki.store</strong>.
+          Bivas Style respects your privacy and is committed to protecting the personal data you share with us when shopping on <strong>bivasstyle.com</strong>.
         </p>
 
         <div className="space-y-2">

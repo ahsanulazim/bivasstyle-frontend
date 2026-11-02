@@ -20,7 +20,7 @@ const OrderSummary = ({ order }) => {
           <div className="flex items-center justify-between gap-5">
             <div className="flex-2">Payment Method</div>
             <div className="flex-1 flex justify-end items-center font-medium uppercase">
-              {order?.paymentMethod === "cod" ? "Cash on Delivery" : "Online (ZiniPay)"}
+              {order?.paymentMethod === "cod" || !order?.paymentMethod ? "Cash on Delivery" : "Online"}
             </div>
           </div>
 

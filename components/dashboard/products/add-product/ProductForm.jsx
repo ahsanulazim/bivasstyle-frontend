@@ -29,10 +29,16 @@ const ProductForm = ({ ref, setIsPending, initialData }) => {
       slug: initialData?.slug || "",
       productDescription: initialData?.productDescription || "",
       price: initialData?.price || "",
+      costPrice: initialData?.costPrice || "",
       discount: initialData?.discount || "",
       sku: initialData?.sku || "",
+      barcode: initialData?.barcode || "",
       stock: initialData?.stock || "",
       category: initialData?.category || "",
+      status: initialData?.status || "published",
+      featured: Boolean(initialData?.featured || false),
+      weight: initialData?.weight || "",
+      lowStockThreshold: initialData?.lowStockThreshold ?? 5,
       productImages: initialData?.productImages || [],
       variantDetails: initialData?.variantDetails || [],
     },
@@ -54,10 +60,16 @@ const ProductForm = ({ ref, setIsPending, initialData }) => {
         slug: initialData.slug || "",
         productDescription: initialData.productDescription || "",
         price: initialData.price || "",
+        costPrice: initialData.costPrice || "",
         discount: initialData.discount || "",
         sku: initialData.sku || "",
+        barcode: initialData.barcode || "",
         stock: initialData.stock || "",
         category: initialData.category || "",
+        status: initialData.status || "published",
+        featured: Boolean(initialData.featured || false),
+        weight: initialData.weight || "",
+        lowStockThreshold: initialData.lowStockThreshold ?? 5,
         productImages: initialData.productImages || [],
         variantDetails: initialData.variantDetails || [],
       });
@@ -168,7 +180,7 @@ const ProductForm = ({ ref, setIsPending, initialData }) => {
             Slug<span className="text-red-600">*</span>
           </label>
           <label className="input w-full">
-            <span className="label">https://oiki.store/products/</span>
+            <span className="label">https://bivasstyle.com/products/</span>
             <input
               type="text"
               placeholder="womens-fashionable-kurti"
@@ -184,11 +196,14 @@ const ProductForm = ({ ref, setIsPending, initialData }) => {
           <Editor control={control} errors={errors} />
         </div>
         <div className="fieldset bg-base-100 p-5 rounded-box mt-5">
-          <h2 className="font-bold text-xl">Pricing</h2>
-          <div className="flex gap-5 items-center">
-            <div className="flex-1">
-              <label htmlFor="price" className="label">
-                Price<span className="text-red-600">*</span>
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-xl">Pricing & Profit Margin</h2>
+            <span className="badge badge-sm badge-neutral font-medium">Financial Analysis</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+            <div>
+              <label htmlFor="price" className="label text-xs font-semibold">
+                Selling Price (BDT)<span className="text-red-600">*</span>
               </label>
               <input
                 type="number"
@@ -197,21 +212,35 @@ const ProductForm = ({ ref, setIsPending, initialData }) => {
                 {...register("price", { required: "Price is required" })}
               />
             </div>
-            <div className="flex-1">
-              <label htmlFor="discount" className="label">
-                Discount
+            <div>
+              <label htmlFor="costPrice" className="label text-xs font-semibold">
+                Cost Price (Buying / Prod)
               </label>
               <input
                 type="number"
                 className="input w-full"
-                placeholder="1000"
+                placeholder="600"
+                {...register("costPrice")}
+              />
+            </div>
+            <div>
+              <label htmlFor="discount" className="label text-xs font-semibold">
+                Discount Price (Optional)
+              </label>
+              <input
+                type="number"
+                className="input w-full"
+                placeholder="900"
                 {...register("discount", { required: false })}
               />
             </div>
           </div>
           {errors.price && (
-            <p className="text-red-600">{errors.price.message}</p>
+            <p className="text-red-600 text-xs mt-1">{errors.price.message}</p>
           )}
+          <p className="text-xs text-base-content/60 mt-3">
+            Cost price enables accurate net profit & margin calculation across your store analytics.
+          </p>
         </div>
         <Variations
           key={variationKey}
@@ -273,26 +302,99 @@ const ProductForm = ({ ref, setIsPending, initialData }) => {
             </p>
           )}
         </div>
+        {/* Status & Visibility */}
         <div className="fieldset bg-base-100 p-5 rounded-box mt-5">
-          <h2 className="font-bold text-xl">Inventory</h2>
-          <label htmlFor="sku" className="label">
-            SKU
+          <h2 className="font-bold text-xl">Status & Visibility</h2>
+          <label htmlFor="status" className="label text-xs font-semibold">
+            Publication Status
           </label>
-          <input
-            type="text"
-            className="input w-full"
-            placeholder="OIKIXYZ"
-            {...register("sku", { required: false })}
-          />
+          <select
+            defaultValue={initialData?.status || "published"}
+            className="select w-full"
+            {...register("status")}
+          >
+            <option value="published">Published (Visible in store)</option>
+            <option value="draft">Draft (Hidden from store)</option>
+            <option value="archived">Archived</option>
+          </select>
 
-          <label className="label">Stock</label>
-          <input
-            type="number"
-            placeholder="10"
-            className="input w-full"
-            {...register("stock", { required: false })}
-          />
+          <div className="mt-4 flex items-center justify-between p-3 bg-base-200/50 rounded-xl">
+            <div>
+              <span className="font-bold text-xs block">Featured Product</span>
+              <span className="text-[11px] opacity-60">Highlight on homepage</span>
+            </div>
+            <input
+              type="checkbox"
+              className="toggle toggle-primary toggle-sm"
+              {...register("featured")}
+            />
+          </div>
         </div>
+
+        {/* Inventory & Logistics */}
+        <div className="fieldset bg-base-100 p-5 rounded-box mt-5">
+          <h2 className="font-bold text-xl">Inventory & Logistics</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="sku" className="label text-xs font-semibold">
+                SKU
+              </label>
+              <input
+                type="text"
+                className="input w-full"
+                placeholder="BV-PAN-01"
+                {...register("sku")}
+              />
+            </div>
+            <div>
+              <label htmlFor="barcode" className="label text-xs font-semibold">
+                Barcode / GTIN
+              </label>
+              <input
+                type="text"
+                className="input w-full"
+                placeholder="890123456"
+                {...register("barcode")}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label className="label text-xs font-semibold">Stock Quantity</label>
+              <input
+                type="number"
+                placeholder="10"
+                className="input w-full"
+                {...register("stock")}
+              />
+            </div>
+            <div>
+              <label className="label text-xs font-semibold">Low Stock Alert</label>
+              <input
+                type="number"
+                placeholder="5"
+                className="input w-full"
+                {...register("lowStockThreshold")}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <label className="label text-xs font-semibold">Package Weight (KG)</label>
+            <input
+              type="number"
+              step="0.01"
+              placeholder="0.5"
+              className="input w-full"
+              {...register("weight")}
+            />
+            <p className="text-[10px] text-base-content/50 mt-1">
+              Used for automated Steadfast/Courier shipping weight charges.
+            </p>
+          </div>
+        </div>
+
         <div className="fieldset bg-base-100 p-5 rounded-box mt-5">
           <h2 className="font-bold text-xl">Categories</h2>
           <label htmlFor="category" className="label">

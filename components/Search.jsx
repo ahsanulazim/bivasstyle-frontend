@@ -111,7 +111,7 @@ const Search = () => {
                   const imageSrc =
                     product.productImages?.[0] ||
                     product.variantDetails?.[0]?.imageGallery?.[0] ||
-                    "/assets/oiki-logo.svg";
+                    "/assets/logo.svg";
 
                   const price =
                     product.discount ||

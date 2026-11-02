@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LuHouse } from "react-icons/lu";
 
 export const metadata = {
-  title: "Shipping & Delivery Policy | Oiki Lifestyle",
+  title: "Shipping & Delivery Policy | Bivas Style",
   description: "Nationwide shipping rates and delivery timelines across Bangladesh.",
 };
 
@@ -25,7 +25,7 @@ const ShippingPolicyPage = () => {
           Shipping &amp; Delivery Policy
         </h1>
         <p className="opacity-80">
-          Oiki Lifestyle delivers handcrafted apparel across all 64 districts of Bangladesh through trusted courier partners including <strong>Steadfast Courier</strong>.
+          Bivas Style delivers handcrafted apparel across all 64 districts of Bangladesh through trusted courier partners including <strong>Steadfast Courier</strong>.
         </p>
 
         <div className="space-y-2">
@@ -57,7 +57,7 @@ const ShippingPolicyPage = () => {
         <div className="space-y-2">
           <h2 className="text-lg font-bold">3. Payment Options</h2>
           <p className="opacity-80">
-            We offer both <strong>Cash on Delivery (COD)</strong> nationwide and secure <strong>Online Payment</strong> (bKash, Nagad, Cards via ZiniPay).
+            We offer <strong>Cash on Delivery (COD)</strong> nationwide for all orders. You pay in cash when your parcel is delivered to your doorstep.
           </p>
         </div>
       </div>

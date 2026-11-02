@@ -4,7 +4,7 @@ import Spinner from "@/components/skeleton/Spinner";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Shop All Products | Oiki Lifestyle",
+  title: "Shop All Products | Bivas Style",
   description:
     "Explore our collection of ethically made handcrafted clothing, sarees, kurtis and more.",
 };

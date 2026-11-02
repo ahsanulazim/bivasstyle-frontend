@@ -17,3 +17,16 @@ export const deleteReview = async (id) => {
   return res.data;
 };
 
+export const deleteReviewAdmin = deleteReview;
+
+export const getAllReviewsAdmin = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  const url = query ? `/reviews/all?${query}` : `/reviews/all`;
+  const res = await api.get(url);
+  return res.data;
+};
+
+export const toggleReviewApproval = async (id) => {
+  const res = await api.patch(`/reviews/toggleStatus?id=${id}`);
+  return res.data;
+};

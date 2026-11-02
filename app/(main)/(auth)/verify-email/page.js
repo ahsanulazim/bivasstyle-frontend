@@ -14,8 +14,8 @@ const page = () => {
     <form className="fieldset w-full lg:max-w-sm max-lg:order-1">
       <Image
         className="mx-auto"
-        src="/assets/oiki-logo-tag.svg"
-        alt="Oiki Logo"
+        src="/assets/logo.svg"
+        alt="Bivas Style Logo"
         width={80}
         height={20}
       />

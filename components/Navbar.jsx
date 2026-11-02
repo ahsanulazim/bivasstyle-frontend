@@ -97,8 +97,9 @@ const Navbar = () => {
           </label>
           <Link href="/" className="hidden lg:block">
             <Image
-              src="/assets/oiki-logo.svg"
-              alt="oiki logo"
+              src="/assets/logo.svg"
+              alt="Bivas Style logo"
+              className="w-12"
               width={65}
               height={30}
               priority
@@ -110,8 +111,8 @@ const Navbar = () => {
           <Search />
           <Link href="/" className="block lg:hidden">
             <Image
-              src="/assets/oiki-logo.svg"
-              alt="oiki logo"
+              src="/assets/logo.svg"
+              alt="Bivas Style logo"
               width={90}
               height={36}
               priority

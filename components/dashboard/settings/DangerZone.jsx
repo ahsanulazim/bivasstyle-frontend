@@ -18,7 +18,7 @@ const DangerZone = () => {
       <div className="p-3.5 rounded-xl bg-error/5 border border-error/20 space-y-3">
         <p className="text-xs opacity-80 leading-relaxed">
           Closing your account will permanently delete your profile, saved
-          addresses, and access to your Oiki Lifestyle account.
+          addresses, and access to your Bivas Style account.
         </p>
         <button
           type="button"

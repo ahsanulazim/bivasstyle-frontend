@@ -6,12 +6,12 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDDIabK7JjoArUid_z8C0VhLpayIESM9is",
-  authDomain: "oiki-604c0.firebaseapp.com",
-  projectId: "oiki-604c0",
-  storageBucket: "oiki-604c0.firebasestorage.app",
-  messagingSenderId: "661834461944",
-  appId: "1:661834461944:web:995e2fc096005ecac7410d",
+  apiKey: "AIzaSyAZNTWFuos0Wnf8atpFLVVQzeiJrOMQ4T4",
+  authDomain: "bivasstyle.firebaseapp.com",
+  projectId: "bivasstyle",
+  storageBucket: "bivasstyle.firebasestorage.app",
+  messagingSenderId: "678618365025",
+  appId: "1:678618365025:web:85d52351c9268134e9be20",
 };
 
 // Initialize Firebase

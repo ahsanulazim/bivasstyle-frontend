@@ -488,6 +488,7 @@ const OrderDetailsPage = ({ params }) => {
           </form>
         </div>
       </dialog>
+      <OrderInvoiceModal modalRef={invoiceModalRef} order={order} />
     </>
   );
 };

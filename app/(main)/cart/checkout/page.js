@@ -8,14 +8,12 @@ import { useRouter } from "next/navigation";
 import ShippingForm from "@/components/cart/checkout/ShippingForm";
 import Overview from "@/components/cart/Overview";
 import Spinner from "@/components/skeleton/Spinner";
-import PaymentMethod from "@/components/cart/checkout/PaymentMethod";
 
-const page = () => {
+const CheckoutPage = () => {
   const router = useRouter();
   const { cartItems, isHydrated } = useContext(MyContext);
   const [isPending, setIsPending] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("cod");
 
   useEffect(() => {
     if (isHydrated && cartItems.length === 0 && !orderCompleted) {
@@ -49,8 +47,8 @@ const page = () => {
         </div>
       </section>
       <section className="px-5 mb-5">
-        <div className="max-w-360 mx-auto grid grid-cols-1 lg:grid-cols-8 gap-5">
-          <div className="lg:col-span-4">
+        <div className="max-w-360 mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <div className="lg:col-span-7">
             <div className="bg-base-100 p-5 rounded-box">
               <h2 className="text-xl font-bold">Shipping & Billing</h2>
               <div className="divider"></div>
@@ -59,20 +57,12 @@ const page = () => {
                   ref={checkoutRef}
                   setIsPending={setIsPending}
                   setOrderCompleted={setOrderCompleted}
-                  paymentMethod={paymentMethod}
                 />
               </div>
             </div>
           </div>
-          <div className="lg:col-span-2">
-            <PaymentMethod
-              paymentMethod={paymentMethod}
-              setPaymentMethod={setPaymentMethod}
-            />
-          </div>
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-5">
             <Overview
-              paymentMethod={paymentMethod}
               ref={checkoutRef}
               isCheckout={true}
               isPending={isPending}
@@ -84,4 +74,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default CheckoutPage;

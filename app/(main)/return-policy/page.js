@@ -2,8 +2,8 @@ import Link from "next/link";
 import { LuHouse } from "react-icons/lu";
 
 export const metadata = {
-  title: "Return & Exchange Policy | Oiki Lifestyle",
-  description: "Easy 3-day size exchange and return policy for Oiki Lifestyle apparel.",
+  title: "Return & Exchange Policy | Bivas Style",
+  description: "Easy 3-day size exchange and return policy for Bivas Style apparel.",
 };
 
 const ReturnPolicyPage = () => {
@@ -25,7 +25,7 @@ const ReturnPolicyPage = () => {
           Return &amp; Exchange Policy
         </h1>
         <p className="opacity-80">
-          At <strong>Oiki Lifestyle</strong>, we want every piece of apparel you order to fit beautifully. If you face any size issue or receive a defective/wrong item, we offer a hassle-free exchange and return process.
+          At <strong>Bivas Style</strong>, we want every piece of apparel you order to fit beautifully. If you face any size issue or receive a defective/wrong item, we offer a hassle-free exchange and return process.
         </p>
 
         <div className="space-y-2">
@@ -67,8 +67,8 @@ const ReturnPolicyPage = () => {
           <p className="font-semibold">Need an Exchange?</p>
           <p className="opacity-80 mt-1">
             Email us at{" "}
-            <a href="mailto:support@oiki.store" className="link text-main font-semibold">
-              support@oiki.store
+            <a href="mailto:support@bivasstyle.com" className="link text-main font-semibold">
+              support@bivasstyle.com
             </a>{" "}
             with your Order ID and photos of the product tag.
           </p>

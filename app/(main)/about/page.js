@@ -2,8 +2,8 @@ import Link from "next/link";
 import { LuHouse, LuMail, LuMapPin, LuPhone } from "react-icons/lu";
 
 export const metadata = {
-  title: "About Us & Contact | Oiki Lifestyle",
-  description: "Learn about Oiki Lifestyle's dedication to preserving Bengali craftsmanship.",
+  title: "About Us & Contact | Bivas Style",
+  description: "Learn about Bivas Style's dedication to preserving Bengali craftsmanship.",
 };
 
 const AboutPage = () => {
@@ -22,15 +22,15 @@ const AboutPage = () => {
 
       <div className="bg-base-100 border border-base-300 rounded-box p-6 md:p-10 space-y-6 text-sm leading-relaxed">
         <h1 className="text-2xl md:text-3xl font-bold text-main">
-          Our Story &mdash; Oiki Lifestyle
+          Our Story &mdash; Bivas Style
         </h1>
         <p className="opacity-80 text-base">
-          <strong>Oiki</strong> is dedicated to preserving the timeless heritage of Bengali craftsmanship. We bring you ethically made, handcrafted apparel—from elegant Sarees and festive ethnic wear to contemporary Kurtis—designed for the modern woman who celebrates her roots.
+          <strong>Bivas Style</strong> is dedicated to preserving the timeless heritage of Bengali craftsmanship. We bring you ethically made, handcrafted apparel—from elegant Sarees and festive ethnic wear to contemporary Kurtis—designed for the modern woman who celebrates her roots.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-base-300">
           <div className="space-y-3">
-            <h2 className="text-lg font-bold">Why Choose Oiki?</h2>
+            <h2 className="text-lg font-bold">Why Choose Bivas Style?</h2>
             <ul className="list-disc list-inside space-y-1.5 opacity-80">
               <li>Authentic fabrics sourced directly from local weavers.</li>
               <li>Breathable, skin-friendly materials tailored for our climate.</li>
@@ -47,8 +47,8 @@ const AboutPage = () => {
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2.5">
                 <LuMail className="text-main shrink-0" />
-                <a href="mailto:support@oiki.store" className="link link-hover">
-                  support@oiki.store
+                <a href="mailto:support@bivasstyle.com" className="link link-hover">
+                  support@bivasstyle.com
                 </a>
               </li>
               <li className="flex items-center gap-2.5">

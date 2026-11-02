@@ -46,6 +46,29 @@ export const deleteProduct = async (id) => {
   return res.data;
 };
 
+export const toggleProductFeatured = async (id) => {
+  const res = await api.patch(`/products/toggleFeatured?id=${id}`);
+  return res.data;
+};
+
+export const quickUpdateProductStock = async ({ id, stock, color, size }) => {
+  const res = await api.patch(`/products/quickStock?id=${id}`, {
+    stock,
+    color,
+    size,
+  });
+  return res.data;
+};
+
+export const bulkUpdateProducts = async ({ action, ids, payload }) => {
+  const res = await api.post("/products/bulkUpdate", {
+    action,
+    ids,
+    payload,
+  });
+  return res.data;
+};
+
 // lib/api/filters.js
 export async function fetchFilters(category) {
   const cat = category || "all";

@@ -30,7 +30,7 @@ const WishlistPage = () => {
               {wishlistItems.length})
             </h1>
             <p className="text-xs opacity-60 mt-0.5">
-              Keep track of your favorite Oiki Lifestyle pieces.
+              Keep track of your favorite Bivas Style pieces.
             </p>
           </div>
           <Link href="/products" className="btn btn-sm btn-outline">

@@ -172,8 +172,8 @@ const UserForm = ({ isLogin, isForgetPass }) => {
     >
       <Image
         className="mx-auto"
-        src="/assets/oiki-logo-tag.svg"
-        alt="Oiki Logo"
+        src="/assets/full-logo.svg"
+        alt="Bivas Style Logo"
         width={80}
         height={20}
       />

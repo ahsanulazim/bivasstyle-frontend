@@ -7,7 +7,8 @@
   --font-dm-sans: var(--font-dm_sans);
   --font-hind-siliguri: var(--font-hind-siliguri);
   --breakpoint-xs: 480px;
-  --color-main: #b30602;
+  --color-main: #8b223d;
+  --color-main-dark: #46131f;
 }
 
 .custom-search {
@@ -32,4 +33,28 @@
 
 .ql-editor {
   @apply min-h-50;
+}
+
+/* Swiper CSS */
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

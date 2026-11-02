@@ -1,42 +1,54 @@
+"use client";
+
 import Breadcrumbs from "@/components/dashboard/Breadcrumbs";
 import ProductData from "@/components/dashboard/products/ProductData";
+import ReviewsModerationModal from "@/components/dashboard/products/ReviewsModerationModal";
 import Link from "next/link";
-import { LuPlus, LuSearch } from "react-icons/lu";
+import { useState } from "react";
+import { LuMessageSquare, LuPlus } from "react-icons/lu";
 
-const page = () => {
+const ProductsPage = () => {
+  const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
+
   return (
-    <>
+    <div className="space-y-5">
       <Breadcrumbs title="Products" />
-      <section className="mb-5">
-        <div className="flex items-center justify-between">
-          <h2 className="font-bold text-2xl w-1/2">Products</h2>
-          <div className="flex items-center gap-5 w-1/2">
-            <label className="input rounded-full w-full">
-              <input type="search" required placeholder="Search" />
-              <LuSearch className="h-[1em] opacity-50" />
-            </label>
-            <select defaultValue="filter" className="select">
-              <option value="filter" disabled={true}>
-                Filter
-              </option>
-              <option>Out of Stock</option>
-              <option>New Items</option>
-              <option>Featured</option>
-            </select>
-            <Link
-              href="/dashboard/products/add-product"
-              className="btn btn-main"
-            >
-              <LuPlus /> Add Products
-            </Link>
-          </div>
+
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-base-100 p-5 rounded-2xl border border-base-300 shadow-xs">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Products & Inventory</h1>
+          <p className="text-xs text-base-content/65 mt-1">
+            Manage your store catalog, track stock levels, calculate profit margins, and moderate reviews.
+          </p>
         </div>
-      </section>
-      <section>
-        <ProductData />
-      </section>
-    </>
+
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setIsReviewsModalOpen(true)}
+            className="btn btn-sm btn-outline gap-1.5 text-xs font-semibold"
+          >
+            <LuMessageSquare className="size-3.5" /> Customer Reviews
+          </button>
+          <Link
+            href="/dashboard/products/add-product"
+            className="btn btn-sm btn-main gap-1 text-xs font-semibold"
+          >
+            <LuPlus className="size-4" /> Add Product
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Products Inventory Table & Tools */}
+      <ProductData />
+
+      {/* Reviews Moderation Modal */}
+      <ReviewsModerationModal
+        isOpen={isReviewsModalOpen}
+        onClose={() => setIsReviewsModalOpen(false)}
+      />
+    </div>
   );
 };
 
-export default page;
+export default ProductsPage;

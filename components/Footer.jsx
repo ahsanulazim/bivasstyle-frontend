@@ -1,67 +1,333 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { FaFacebookF } from "react-icons/fa6";
+import { toast } from "react-toastify";
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    toast.success("Thank you for subscribing to Bivas Style!");
+    setEmail("");
+  };
+
   return (
-    <>
-      <footer className="bg-neutral text-neutral-content px-5 mt-12">
-        <div className="footer sm:footer-horizontal py-10 max-w-360 mx-auto">
-          <aside>
-            <Image
-              src="/assets/oiki-logo-tag.svg"
-              alt="Oiki Logo"
-              width={120}
-              height={60}
-            />
-            <p className="max-w-sm text-balance text-sm opacity-80">
-              Oiki is dedicated to preserving Bengali craftsmanship. We bring
-              you ethically made, handcrafted apparel from elegant sarees to
-              trendy Kurtis, designed for the woman who celebrates her roots.
-            </p>
-          </aside>
-          <nav>
-            <h6 className="footer-title">Customer Care</h6>
-            <Link href="/track-order" className="link link-hover">
-              Track Your Order
-            </Link>
-            <Link href="/return-policy" className="link link-hover">
-              Return &amp; Exchange Policy
-            </Link>
-            <Link href="/shipping-policy" className="link link-hover">
-              Shipping &amp; Delivery Policy
-            </Link>
-            <Link href="/privacy-policy" className="link link-hover">
-              Privacy Policy &amp; Terms
-            </Link>
-          </nav>
-          <nav>
-            <h6 className="footer-title">Quick Links</h6>
-            <Link href="/products" className="link link-hover">
-              Shop All Collection
-            </Link>
-            <Link href="/dashboard" className="link link-hover">
-              My Account &amp; Orders
-            </Link>
-            <Link href="/cart" className="link link-hover">
-              Shopping Cart
-            </Link>
-            <Link href="/about" className="link link-hover">
-              About Oiki &amp; Contact
-            </Link>
-          </nav>
+    <footer className="site-footer bg-main-dark text-white border-t border-neutral-800 mt-16 font-dm-sans">
+      {/* 1. Main Footer Widgets (4 Columns) */}
+      <div className="site-footer-row footer-widgets border-b border-neutral-50/10">
+        <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+            {/* Column 1: Company */}
+            <div className="lg:col-span-3">
+              <h4 className="text-[15px] font-bold tracking-tight text-white mb-4 uppercase">
+                Company
+              </h4>
+              <ul className="space-y-2.5 text-sm text-neutral-400">
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Careers for Bivas Style
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    About Bivas Style
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Investor Relations
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Bivas Devices &amp; Outlets
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/products"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Customer reviews
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Social Responsibility
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Store Locations
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 2: Resources */}
+            <div className="lg:col-span-3">
+              <h4 className="text-[15px] font-bold tracking-tight text-white mb-4 uppercase">
+                Resources
+              </h4>
+              <ul className="space-y-2.5 text-sm text-neutral-400">
+                <li>
+                  <Link
+                    href="/dashboard"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Your Orders
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/return-policy"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Returns &amp; Replacements
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/shipping-policy"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Shipping Rates &amp; Policies
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/return-policy"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Refund and Returns Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy-policy"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy-policy"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Terms and Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy-policy"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Cookie Settings
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Help Center
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Help & Support */}
+            <div className="lg:col-span-3">
+              <h4 className="text-[15px] font-bold tracking-tight text-white mb-4 uppercase">
+                Help &amp; Support
+              </h4>
+              <ul className="space-y-2.5 text-sm text-neutral-400">
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Sell on Bivas Style
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Sell Your Services on Bivas
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/products"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Sell on Bivas Business
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/products"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Sell Your Apps on Bivas
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Become an Affiliate
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Advertise Your Products
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Sell-Publish with Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors duration-200"
+                  >
+                    Become a Bivas Vendor
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Newsletter Subscription */}
+            <div className="lg:col-span-3">
+              <h4 className="text-[15px] font-bold tracking-tight text-white mb-4">
+                Subscribe to our emails
+              </h4>
+              <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
+                Subscribe to receive all our updates and offers, and get a 10%
+                discount on your first purchase.
+              </p>
+              <form onSubmit={handleSubscribe} className="space-y-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  required
+                  className="w-full bg-[#141414] border border-neutral-700/80 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors"
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3 px-5 bg-white text-black font-semibold text-xs tracking-widest uppercase hover:bg-neutral-200 active:scale-[0.99] transition-all duration-150 cursor-pointer"
+                >
+                  Subscribe
+                </button>
+                <div className="pt-1">
+                  <p className="text-[11px] text-neutral-400 leading-normal">
+                    By subscribing you agree to our{" "}
+                    <Link
+                      href="/privacy-policy"
+                      className="text-neutral-300 underline underline-offset-2 hover:text-white"
+                    >
+                      Terms &amp; Conditions
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      href="/privacy-policy"
+                      className="text-neutral-300 underline underline-offset-2 hover:text-white"
+                    >
+                      Privacy &amp; Cookies Policy
+                    </Link>
+                    .
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-      </footer>
-      <footer className="footer sm:footer-horizontal footer-center bg-main text-neutral-content p-2">
-        <aside>
-          <p className="text-xs">
-            Copyright © {new Date().getFullYear()} - All rights reserved by{" "}
-            <a className="link" href="https://nexorosolution.com">
-              Nexoro Solutions
-            </a>
-          </p>
-        </aside>
-      </footer>
-    </>
+      </div>
+
+      {/* 2. Copyright & Payment Icons Row */}
+      <div className="site-footer-row footer-copyright border-b border-neutral-50/10">
+        <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <p className="text-xs sm:text-sm text-neutral-400">
+              Copyright {new Date().getFullYear()} ©{" "}
+              <span className="text-white font-medium">Bivas Style</span> Theme.
+              All rights reserved. Powered by{" "}
+              <Link
+                href="https://nexorosolution.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-white hover:underline"
+              >
+                Nexoro Solutions
+              </Link>
+              .
+            </p>
+
+            {/* Social Cards */}
+            <div className="flex items-center gap-2.5 flex-wrap justify-center">
+              <a href="https://www.facebook.com/bivasstyle" target="_blank">
+                <button className="btn btn-circle btn-outline">
+                  <FaFacebookF />
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Bottom Brand Logo Pattern (Giant Watermark Logo) */}
+      <div className="site-footer-row footer-logo-pattern bg-main-dark overflow-hidden flex items-center justify-center pt-8 pb-4 px-4 select-none pointer-events-none">
+        <div className="w-full max-w-360 flex justify-center items-center">
+          <Image
+            width={1440}
+            height={300}
+            src="/assets/logo-title.svg"
+            className="-mb-12 sm:-mb-22 md:-mb-32"
+          />
+        </div>
+      </div>
+    </footer>
   );
 };
 

@@ -197,7 +197,7 @@ const ProfileForm = () => {
   return (
     <SettingsCard
       title="Personal Information & Profile Photo"
-      subtitle="Update your avatar and personal details displayed across your Oiki account."
+      subtitle="Update your avatar and personal details displayed across your Bivas Style account."
       icon={LuUser}
     >
       <div className="space-y-6">

@@ -22,7 +22,7 @@ const SizeGuideModal = ({ ref, category }) => {
         <div className="flex items-center justify-between border-b border-base-300 pb-3 mb-4">
           <div className="flex items-center gap-2">
             <LuRuler className="text-main text-xl" />
-            <h3 className="font-bold text-lg">Oiki Size & Measurement Guide</h3>
+            <h3 className="font-bold text-lg">Bivas Style Size & Measurement Guide</h3>
           </div>
           <button
             type="button"
@@ -99,7 +99,7 @@ const SizeGuideModal = ({ ref, category }) => {
               <strong>Hip:</strong> Measure around the fullest part of your hips.
             </li>
             <li>
-              <strong>Note for Sarees:</strong> All Oiki Sarees are standard Free Size (5.5 meters length with 0.8–1 meter unstitched blouse piece unless stated otherwise).
+              <strong>Note for Sarees:</strong> All Bivas Style Sarees are standard Free Size (5.5 meters length with 0.8–1 meter unstitched blouse piece unless stated otherwise).
             </li>
           </ul>
         </div>
