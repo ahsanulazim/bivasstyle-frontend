@@ -69,7 +69,14 @@ const OrderSummary = ({ order }) => {
           <div className="flex items-center justify-between gap-5">
             <div className="flex-2">Shipping</div>
             <div className="flex-1 flex justify-between items-center">
-              <div>Standard Shipping</div>
+              <div>
+                {order?.courierCompany || "Standard Shipping"}
+                {order?.totalWeight > 0 && (
+                  <span className="text-xs opacity-60 ml-1">
+                    ({order.totalWeight} KG)
+                  </span>
+                )}
+              </div>
               <div>
                 <TakaSymbol />
                 {order?.shippingCharge}

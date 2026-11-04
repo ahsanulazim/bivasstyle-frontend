@@ -1,24 +1,47 @@
+"use client";
+
+import { deleteShippingRate } from "@/api/shippingApi";
 import TakaSymbol from "@/components/ui/TakaSymbol";
 import { MyContext } from "@/context/MyProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { LuSquarePen, LuTrash2 } from "react-icons/lu";
+import { toast } from "react-toastify";
+import EditRateModal from "./EditRateModal";
 
 const ShippingData = () => {
   const { shippingRates, shippingRatesLoading } = useContext(MyContext);
+  const [editingRate, setEditingRate] = useState(null);
+  const queryClient = useQueryClient();
+
+  const { mutate: handleDelete, isPending: isDeleting } = useMutation({
+    mutationFn: deleteShippingRate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["shippingRates"] });
+      toast.success("Shipping rate deleted successfully");
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to delete rate");
+    },
+  });
+
+  const confirmDelete = (rate) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete shipping rate for ${rate.companyName}?`,
+      )
+    ) {
+      handleDelete(rate._id);
+    }
+  };
 
   return (
     <div className="my-5">
       <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
         <table className="table">
-          {/* head */}
           <thead>
             <tr className="bg-base-200">
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
               <th>Company</th>
               <th>Location</th>
               <th>Base Charge</th>
@@ -29,47 +52,53 @@ const ShippingData = () => {
             </tr>
           </thead>
           <tbody>
-            {/* row 1 */}
             {shippingRatesLoading ? (
               <tr>
-                <td colSpan={8} className="text-center">
-                  Loading...
+                <td colSpan={7} className="text-center py-6">
+                  <span className="loading loading-spinner"></span> Loading shipping rates...
                 </td>
               </tr>
-            ) : shippingRates?.length === 0 ? (
+            ) : !shippingRates || shippingRates.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center">
-                  No data found
+                <td colSpan={7} className="text-center py-6 text-base-content/60">
+                  No shipping rates found. Click &quot;Add Rates&quot; to create one.
                 </td>
               </tr>
             ) : (
-              shippingRates?.map((rate) => (
-                <tr key={rate._id}>
-                  <td>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </td>
+              shippingRates.map((rate) => (
+                <tr key={rate._id} className="hover">
                   <td>
                     {rate.companyLogo ? (
-                      <Image
-                        src={rate.companyLogo}
-                        alt={rate.companyName}
-                        width={100}
-                        height={30}
-                      />
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src={rate.companyLogo}
+                          alt={rate.companyName || "Company logo"}
+                          width={80}
+                          height={30}
+                          className="object-contain max-h-8 w-auto rounded"
+                        />
+                        <span className="font-semibold text-xs opacity-75">
+                          {rate.companyName}
+                        </span>
+                      </div>
                     ) : (
-                      rate.companyName
+                      <span className="font-semibold">{rate.companyName}</span>
                     )}
                   </td>
-                  <td>{rate.location?.map((item) => item.label).join(", ")}</td>
                   <td>
+                    <span className="text-sm">
+                      {Array.isArray(rate.location)
+                        ? rate.location.map((item) => item.label).join(", ")
+                        : "N/A"}
+                    </span>
+                  </td>
+                  <td className="font-semibold">
                     <TakaSymbol /> {rate.baseCharge}
                   </td>
                   <td>
-                    <TakaSymbol /> {rate.extraCharge}
+                    <TakaSymbol /> {rate.extraCharge || 0}
                   </td>
-                  <td>{rate.weightLimit}</td>
+                  <td>{rate.weightLimit || 1} KG</td>
                   <td>
                     <div
                       className={`badge badge-soft ${
@@ -83,23 +112,34 @@ const ShippingData = () => {
                           className={`status animate-ping ${
                             rate?.status ? "status-success" : "status-error"
                           }`}
-                        ></div>{" "}
+                        ></div>
                         <div
                           className={`status ${
                             rate?.status ? "status-success" : "status-error"
                           }`}
                         ></div>
-                      </div>{" "}
-                      {rate?.status ? "Active" : "Inactive"}
+                      </div>
+                      <span className="ml-1">
+                        {rate?.status ? "Active" : "Inactive"}
+                      </span>
                     </div>
                   </td>
                   <td>
-                    <div className="flex gap-5">
-                      <button className="btn btn-circle btn-soft btn-info">
-                        <LuSquarePen />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingRate(rate)}
+                        className="btn btn-circle btn-sm btn-soft btn-info"
+                        title="Edit Rate"
+                      >
+                        <LuSquarePen className="size-4" />
                       </button>
-                      <button className="btn btn-circle btn-soft btn-error">
-                        <LuTrash2 />
+                      <button
+                        onClick={() => confirmDelete(rate)}
+                        disabled={isDeleting}
+                        className="btn btn-circle btn-sm btn-soft btn-error"
+                        title="Delete Rate"
+                      >
+                        <LuTrash2 className="size-4" />
                       </button>
                     </div>
                   </td>
@@ -109,6 +149,13 @@ const ShippingData = () => {
           </tbody>
         </table>
       </div>
+
+      {editingRate && (
+        <EditRateModal
+          rate={editingRate}
+          onClose={() => setEditingRate(null)}
+        />
+      )}
     </div>
   );
 };

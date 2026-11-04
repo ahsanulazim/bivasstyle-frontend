@@ -24,9 +24,9 @@ const AddRateForm = ({ ref }) => {
       companyLogo: "",
       location: [],
       baseCharge: "",
-      extraCharge: "",
-      weightLimit: "",
-      status: true,
+      extraCharge: "0",
+      weightLimit: "1",
+      status: "true",
     },
   });
 
@@ -40,7 +40,7 @@ const AddRateForm = ({ ref }) => {
         })) || []),
       ];
 
-  const convertBase24 = (e) => {
+  const convertBase64 = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -58,15 +58,24 @@ const AddRateForm = ({ ref }) => {
       queryClient.invalidateQueries({ queryKey: ["shippingRates"] });
       toast.success("Rate added successfully");
       reset();
-      ref.current.close();
+      ref?.current?.close();
     },
-    onError: () => {
-      toast.error("Failed to add rate");
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to add rate");
     },
   });
 
   const onSubmit = (data) => {
-    mutate(data);
+    mutate({
+      ...data,
+      baseCharge: Number(data.baseCharge),
+      extraCharge:
+        data.extraCharge === "" || isNaN(Number(data.extraCharge))
+          ? 0
+          : Number(data.extraCharge),
+      weightLimit: Number(data.weightLimit),
+      status: data.status === "true" || data.status === true,
+    });
   };
 
   return (
@@ -94,7 +103,7 @@ const AddRateForm = ({ ref }) => {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => convertBase24(e)}
+            onChange={(e) => convertBase64(e)}
             className="file-input w-full"
           />
           {errors.companyLogo && (
@@ -112,7 +121,7 @@ const AddRateForm = ({ ref }) => {
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Dhaka"
+                placeholder="Select Locations"
                 options={locationOptions}
                 isMulti
               />
@@ -123,7 +132,7 @@ const AddRateForm = ({ ref }) => {
           )}
 
           <label htmlFor="baseCharge" className="label">
-            Base Charge
+            Base Charge (৳)
           </label>
           <input
             type="number"
@@ -131,8 +140,8 @@ const AddRateForm = ({ ref }) => {
               required: "Base Charge is required",
               valueAsNumber: true,
               min: {
-                value: 50,
-                message: "Base Charge must be at least 50TK",
+                value: 1,
+                message: "Base Charge must be greater than 0",
               },
             })}
             className="input w-full"
@@ -143,16 +152,17 @@ const AddRateForm = ({ ref }) => {
           )}
 
           <label htmlFor="extraCharge" className="label">
-            Extra Charge
+            Extra Charge per additional KG (৳)
           </label>
           <input
             type="number"
             {...register("extraCharge", {
               required: false,
-              valueAsNumber: true,
+              setValueAs: (v) =>
+                v === "" || v === null || isNaN(Number(v)) ? 0 : Number(v),
               min: {
-                value: 10,
-                message: "Extra Charge must be at least 10TK",
+                value: 0,
+                message: "Extra Charge cannot be negative",
               },
             })}
             className="input w-full"
@@ -163,7 +173,7 @@ const AddRateForm = ({ ref }) => {
           )}
 
           <label htmlFor="weightLimit" className="label">
-            Weight Limit
+            Base Weight Limit (KG)
           </label>
           <input
             type="number"
@@ -172,8 +182,8 @@ const AddRateForm = ({ ref }) => {
               required: "Weight Limit is required",
               valueAsNumber: true,
               min: {
-                value: 0.5,
-                message: "Weight Limit must be at least 0.5KG",
+                value: 0.1,
+                message: "Weight Limit must be at least 0.1KG",
               },
             })}
             className="input w-full"
@@ -191,9 +201,7 @@ const AddRateForm = ({ ref }) => {
               <input
                 type="radio"
                 className="radio"
-                {...register("status", {
-                  setValueAs: (val) => val === "true" || val === true,
-                })}
+                {...register("status")}
                 value="true"
               />
               <label htmlFor="status">Active</label>
@@ -202,9 +210,7 @@ const AddRateForm = ({ ref }) => {
               <input
                 type="radio"
                 className="radio"
-                {...register("status", {
-                  setValueAs: (val) => val === "true" || val === true,
-                })}
+                {...register("status")}
                 value="false"
               />
               <label htmlFor="status">Inactive</label>
@@ -214,29 +220,31 @@ const AddRateForm = ({ ref }) => {
             <span className="text-red-600">{errors.status.message}</span>
           )}
 
-          <button
-            className="btn btn-success mt-5"
-            type="submit"
-            disabled={isPending}
-          >
-            {isPending ? (
-              <>
-                <span className="loading loading-spinner"></span> Saving...
-              </>
-            ) : (
-              "Save"
-            )}
-          </button>
-          <button
-            type="button"
-            className="btn btn-error"
-            onClick={() => {
-              ref.current.close();
-              reset();
-            }}
-          >
-            Close
-          </button>
+          <div className="flex gap-3 mt-5">
+            <button
+              className="btn btn-success flex-1"
+              type="submit"
+              disabled={isPending}
+            >
+              {isPending ? (
+                <>
+                  <span className="loading loading-spinner"></span> Saving...
+                </>
+              ) : (
+                "Save"
+              )}
+            </button>
+            <button
+              type="button"
+              className="btn btn-error"
+              onClick={() => {
+                ref?.current?.close();
+                reset();
+              }}
+            >
+              Close
+            </button>
+          </div>
         </form>
       </div>
     </dialog>

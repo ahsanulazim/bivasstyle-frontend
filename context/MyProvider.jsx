@@ -2,7 +2,7 @@
 import { getAllCategories } from "@/api/categoryApi";
 import { getAllLocations } from "@/api/locationApi";
 import { getAllProducts } from "@/api/productApi";
-import { getAllShippingRates } from "@/api/shippingApi";
+import { getAllShippingRates, getShippingRateByDistrict } from "@/api/shippingApi";
 import { api } from "@/axios/axiosInstance";
 import { auth } from "@/firebase/firebase.config";
 import { useQuery } from "@tanstack/react-query";
@@ -177,6 +177,7 @@ const MyProvider = ({ children }) => {
         size: size || null,
         quantity: quantity,
         price: itemPrice,
+        weight: Number(product?.weight || 0),
         image:
           variant?.imageGallery?.[0] ||
           variant?.swatchImage ||
@@ -285,11 +286,14 @@ const MyProvider = ({ children }) => {
 
   useEffect(() => {
     if (deliveryAdd) {
-      fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/getShippingRateByDistrict?district=${deliveryAdd}`,
-      )
-        .then((res) => res.json())
-        .then((data) => setShippingPrice(data));
+      getShippingRateByDistrict(deliveryAdd)
+        .then((data) => setShippingPrice(data))
+        .catch((err) => {
+          console.error("Failed to fetch shipping rate:", err);
+          setShippingPrice(null);
+        });
+    } else {
+      setShippingPrice(null);
     }
   }, [deliveryAdd]);
 

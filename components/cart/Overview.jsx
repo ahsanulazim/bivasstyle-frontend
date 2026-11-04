@@ -33,7 +33,33 @@ const Overview = ({ isCheckout, ref, isPending, paymentMethod }) => {
   );
 
   const subtotal = calculateTotalPrice();
-  const baseShipping = deliveryAdd ? Number(shippingPrice?.baseCharge) || 0 : 0;
+
+  // Calculate total package weight from cart items
+  const totalWeight = (cartItems || []).reduce(
+    (sum, item) =>
+      sum + (Number(item.weight || 0) * (Number(item.quantity) || 1)),
+    0,
+  );
+
+  let calculatedShipping = 0;
+  let extraWeightFee = 0;
+
+  if (deliveryAdd && shippingPrice) {
+    const baseCharge = Number(shippingPrice?.baseCharge || 0);
+    const weightLimit = Number(shippingPrice?.weightLimit || 0);
+    const extraCharge = Number(shippingPrice?.extraCharge || 0);
+
+    if (weightLimit > 0 && totalWeight > weightLimit && extraCharge > 0) {
+      const extraWeight = totalWeight - weightLimit;
+      const extraUnits = Math.ceil(extraWeight);
+      extraWeightFee = extraUnits * extraCharge;
+      calculatedShipping = baseCharge + extraWeightFee;
+    } else {
+      calculatedShipping = baseCharge;
+    }
+  }
+
+  const baseShipping = deliveryAdd ? calculatedShipping : 0;
 
   const validateMutation = useMutation({
     mutationFn: validateCouponCode,
@@ -191,22 +217,29 @@ const Overview = ({ isCheckout, ref, isPending, paymentMethod }) => {
         </div>
 
         {deliveryAdd && (
-          <div className="flex justify-between">
-            <span className="opacity-75">Shipping:</span>
-            <span className="font-bold">
-              {appliedCoupon?.freeShipping ? (
-                <span className="text-success font-bold">
-                  <span className="line-through opacity-50 mr-1">
-                    ৳{baseShipping}
+          <div className="flex flex-col gap-0.5">
+            <div className="flex justify-between">
+              <span className="opacity-75">Shipping:</span>
+              <span className="font-bold">
+                {appliedCoupon?.freeShipping ? (
+                  <span className="text-success font-bold">
+                    <span className="line-through opacity-50 mr-1">
+                      ৳{baseShipping}
+                    </span>
+                    FREE
                   </span>
-                  FREE
-                </span>
-              ) : (
-                <>
-                  <TakaSymbol /> {baseShipping}
-                </>
-              )}
-            </span>
+                ) : (
+                  <>
+                    <TakaSymbol /> {baseShipping}
+                  </>
+                )}
+              </span>
+            </div>
+            {extraWeightFee > 0 && (
+              <p className="text-[11px] text-base-content/60 text-right">
+                Includes ৳{extraWeightFee} extra weight fee ({totalWeight} KG)
+              </p>
+            )}
           </div>
         )}
 

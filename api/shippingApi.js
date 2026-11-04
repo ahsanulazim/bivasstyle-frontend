@@ -1,61 +1,33 @@
+import { api } from "@/axios/axiosInstance";
+
 export const getAllShippingRates = async () => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/getAllShippingRates`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    },
-  );
-  const data = await res.json();
-  return data;
+  const res = await api.get("/shippingRates/getAllShippingRates");
+  return res.data;
 };
 
 export const createShippingRate = async (shippingData) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/createShippingRate`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(shippingData),
-    },
-  );
-  const data = await res.json();
-  return data;
+  const res = await api.post("/shippingRates/createShippingRate", shippingData);
+  return res.data;
 };
 
-export const getShippingRateByDistrict = async (id) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/getShippingRateByDistrict/?district=${district}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    },
+export const getShippingRateByDistrict = async (district) => {
+  const res = await api.get(
+    `/shippingRates/getShippingRateByDistrict?district=${district}`,
   );
-  const data = await res.json();
-  return data;
+  return res.data;
 };
 
-// export const updateShippingRate = async (id, data) => {
-//   const res = await fetch(
-//     `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/updateShippingRate/${id}`,
-//     {
-//       method: "PUT",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(data),
-//     },
-//   );
-//   const data = await res.json();
-//   return data;
-// };
+export const updateShippingRate = async ({ id, ...shippingData }) => {
+  const res = await api.put(
+    `/shippingRates/updateShippingRate?id=${id}`,
+    shippingData,
+  );
+  return res.data;
+};
 
 export const deleteShippingRate = async (id) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/deleteShippingRate/?id=${id}`,
-    {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    },
+  const res = await api.delete(
+    `/shippingRates/deleteShippingRate?id=${id}`,
   );
-  const data = await res.json();
-  return data;
+  return res.data;
 };
