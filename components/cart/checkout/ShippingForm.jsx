@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createOrder } from "@/api/orderApi";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { getCookie, trackFacebookEvent } from "@/lib/fpixel";
 
 const ShippingForm = ({
   ref,
@@ -79,10 +80,47 @@ const ShippingForm = ({
     onSuccess: (data) => {
       setOrderCompleted?.(true);
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+
+      const createdOrder = data?.order;
+      const orderId = createdOrder?._id || data?.order?.insertedId || "";
+
+      // Track Meta Pixel client-side Purchase event with matching eventID for deduplication
+      if (orderId) {
+        const orderItems = createdOrder?.products || cartItems;
+        trackFacebookEvent(
+          "Purchase",
+          {
+            content_name: "Order Placement",
+            content_type: "product",
+            contents: orderItems?.map((p) => ({
+              id: p.productId || p._id || p.id,
+              quantity: p.quantity,
+              item_price: p.price,
+            })),
+            content_ids: orderItems?.map((p) => p.productId || p._id || p.id),
+            num_items: orderItems?.reduce(
+              (sum, p) => sum + (p.quantity || 1),
+              0,
+            ),
+            value: Number(createdOrder?.totalPrice || 0),
+            currency: "BDT",
+          },
+          {
+            eventId: orderId.toString(),
+            skipCapi: true, // Server createOrder already dispatched CAPI with this exact eventId
+          },
+        );
+
+        if (typeof window !== "undefined") {
+          try {
+            sessionStorage.setItem(`fb_purchased_${orderId}`, "true");
+          } catch {}
+        }
+      }
+
       clearCart();
       toast.success("Order Placed Successfully");
       reset();
-      const orderId = data?.order?._id || data?.order?.insertedId || "";
       router.push(
         `/cart/checkout/payment-success?orderId=${orderId}&method=cod`,
       );
@@ -99,12 +137,18 @@ const ShippingForm = ({
   }, [isPending, setIsPending]);
 
   const onSubmit = (data) => {
+    const fbp = getCookie("_fbp");
+    const fbc = getCookie("_fbc");
+
     const orderData = {
       user: newUser ? newUser.user : "guest",
       customer: data,
       products: cartItems,
       paymentMethod: "cod",
       couponCode: appliedCoupon?.code || null,
+      fbp,
+      fbc,
+      eventSourceUrl: typeof window !== "undefined" ? window.location.href : "",
     };
 
     mutate(orderData);

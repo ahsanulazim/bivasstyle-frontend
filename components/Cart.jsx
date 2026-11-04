@@ -48,7 +48,7 @@ const Cart = () => {
                   />
                   <div>
                     <h3>
-                      {item.productName}-{item.size}
+                      {item.productName}{item.color ? ` (${item.color}${item.size ? ` / ${item.size}` : ""})` : item.size ? ` (${item.size})` : ""}
                     </h3>
                     <p className="text-xs font-bold">
                       {item.quantity}x <TakaSymbol />

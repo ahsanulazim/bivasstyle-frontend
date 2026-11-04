@@ -109,13 +109,48 @@ const MyProvider = ({ children }) => {
 
   // 3. Add function to update cart items
   const addToCart = (product, variant, size, quantity) => {
-    const cartItemId = `${product._id}-${variant.color}-${size}`;
+    const hasVariant = Boolean(variant);
+    const hasSize = Boolean(size);
+    const cartItemId = hasVariant
+      ? hasSize
+        ? `${product._id}-${variant.color}-${size}`
+        : `${product._id}-${variant.color}`
+      : `${product._id}`;
 
     // Check if product variant already exists in cart
     const existingCartItem = cartItems.find((item) => item.id === cartItemId);
 
-    const activeSizeDetail = variant?.sizes?.find((s) => s.size === size);
-    const stock = activeSizeDetail ? activeSizeDetail.stock : 0;
+    const activeSizeDetail = hasSize
+      ? variant?.sizes?.find((s) => s.size === size)
+      : null;
+
+    const stock = hasVariant
+      ? hasSize
+        ? activeSizeDetail
+          ? Number(activeSizeDetail.stock || 0)
+          : 0
+        : Number(variant?.stock ?? product?.stock ?? 0)
+      : Number(product?.stock || 0);
+
+    const itemPrice = hasVariant
+      ? hasSize
+        ? Number(activeSizeDetail?.discount) > 0
+          ? Number(activeSizeDetail.discount)
+          : Number(activeSizeDetail?.price) > 0
+            ? Number(activeSizeDetail.price)
+            : Number(product?.discount) > 0
+              ? Number(product.discount)
+              : Number(product?.price || 0)
+        : Number(variant?.discount) > 0
+          ? Number(variant.discount)
+          : Number(variant?.price) > 0
+            ? Number(variant.price)
+            : Number(product?.discount) > 0
+              ? Number(product.discount)
+              : Number(product?.price || 0)
+      : Number(product?.discount) > 0
+        ? Number(product.discount)
+        : Number(product?.price || 0);
 
     if (existingCartItem) {
       const newQuantiy = existingCartItem.quantity + quantity;
@@ -138,18 +173,14 @@ const MyProvider = ({ children }) => {
         id: cartItemId,
         productId: product._id,
         productName: product.productName,
-        color: variant.color,
-        size: size,
+        color: variant?.color || null,
+        size: size || null,
         quantity: quantity,
-        price:
-          Number(activeSizeDetail?.discount) > 0
-            ? Number(activeSizeDetail.discount)
-            : Number(activeSizeDetail?.price) > 0
-              ? Number(activeSizeDetail.price)
-              : Number(product.discount) > 0
-                ? Number(product.discount)
-                : Number(product.price),
-        image: variant?.imageGallery?.[0] || product.productImages?.[0],
+        price: itemPrice,
+        image:
+          variant?.imageGallery?.[0] ||
+          variant?.swatchImage ||
+          product.productImages?.[0],
         stock: stock,
       };
       setCartItems((prevCartItems) => [...prevCartItems, newCartItem]);

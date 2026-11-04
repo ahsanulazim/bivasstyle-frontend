@@ -74,34 +74,58 @@ const QuickStockModal = ({ product, isOpen, onClose }) => {
                 Select Variant / Size to Adjust:
               </label>
               <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-base-200/50 rounded-xl border border-base-300">
-                {product.variantDetails.map((v) =>
-                  (v.sizes || []).map((s, idx) => {
-                    const isSelected =
-                      selectedVariant?.color === v.color &&
-                      selectedVariant?.size === s.size;
-                    return (
-                      <div
-                        key={`${v.color}-${s.size}-${idx}`}
-                        onClick={() => {
-                          setSelectedVariant({ color: v.color, size: s.size });
-                          setStockVal(s.stock);
-                        }}
-                        className={`p-2.5 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all ${
-                          isSelected
-                            ? "bg-primary text-primary-content font-bold shadow-xs"
-                            : "hover:bg-base-300/60"
-                        }`}
-                      >
-                        <span>
-                          {v.color} - Size {s.size}
-                        </span>
-                        <span className="badge badge-sm badge-neutral">
-                          {s.stock} in stock
-                        </span>
-                      </div>
-                    );
-                  }),
-                )}
+                {product.variantDetails.map((v) => {
+                  if (Array.isArray(v.sizes) && v.sizes.length > 0) {
+                    return v.sizes.map((s, idx) => {
+                      const isSelected =
+                        selectedVariant?.color === v.color &&
+                        selectedVariant?.size === s.size;
+                      return (
+                        <div
+                          key={`${v.color}-${s.size}-${idx}`}
+                          onClick={() => {
+                            setSelectedVariant({ color: v.color, size: s.size });
+                            setStockVal(s.stock);
+                          }}
+                          className={`p-2.5 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all ${
+                            isSelected
+                              ? "bg-primary text-primary-content font-bold shadow-xs"
+                              : "hover:bg-base-300/60"
+                          }`}
+                        >
+                          <span>
+                            {v.color} - Size {s.size}
+                          </span>
+                          <span className="badge badge-sm badge-neutral">
+                            {s.stock} in stock
+                          </span>
+                        </div>
+                      );
+                    });
+                  }
+                  const isSelected =
+                    selectedVariant?.color === v.color &&
+                    !selectedVariant?.size;
+                  return (
+                    <div
+                      key={v.color}
+                      onClick={() => {
+                        setSelectedVariant({ color: v.color, size: null });
+                        setStockVal(v.stock ?? 0);
+                      }}
+                      className={`p-2.5 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all ${
+                        isSelected
+                          ? "bg-primary text-primary-content font-bold shadow-xs"
+                          : "hover:bg-base-300/60"
+                      }`}
+                    >
+                      <span>{v.color} (Color Only)</span>
+                      <span className="badge badge-sm badge-neutral">
+                        {v.stock ?? 0} in stock
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ) : null}

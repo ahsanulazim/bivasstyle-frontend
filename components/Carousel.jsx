@@ -43,7 +43,8 @@ const Carousel = () => {
             width={1920}
             height={800}
             src="/assets/carousel/03.jpeg"
-            alt="banner"
+            alt="Bivas Style Premium Handcrafted Fashion Banner"
+            priority={true}
           />
         </SwiperSlide>
         <SwiperSlide>
@@ -51,7 +52,7 @@ const Carousel = () => {
             width={1920}
             height={800}
             src="/assets/carousel/03.jpeg"
-            alt="banner"
+            alt="Bivas Style Festive Collection Promotion"
           />
         </SwiperSlide>
         <SwiperSlide>
@@ -59,15 +60,23 @@ const Carousel = () => {
             width={1920}
             height={800}
             src="/assets/carousel/03.jpeg"
-            alt="banner"
+            alt="Bivas Style Modest Wear and Sarees"
           />
         </SwiperSlide>
       </Swiper>
       <div className="absolute z-30 top-1/2 -translate-y-1/2 w-full flex justify-between p-2">
-        <button className="prev-btn">
+        <button
+          className="prev-btn"
+          aria-label="Previous slide"
+          type="button"
+        >
           <LuChevronLeft size={30} className="text-white cursor-pointer" />
         </button>
-        <button className="next-btn">
+        <button
+          className="next-btn"
+          aria-label="Next slide"
+          type="button"
+        >
           <LuChevronRight size={30} className="text-white cursor-pointer" />
         </button>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useContext, useRef } from "react";
+import { useState, useMemo, useContext, useRef, useEffect } from "react";
 import ProductImages from "./ProductImages";
 import { FaHeart, FaRegHeart, FaStar } from "react-icons/fa6";
 import { LuRuler } from "react-icons/lu";
@@ -9,26 +9,43 @@ import SizeGuideModal from "./SizeGuideModal";
 import { MyContext } from "@/context/MyProvider";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { trackFacebookEvent } from "@/lib/fpixel";
 
 const ProductInteractiveLayer = ({ product }) => {
   const router = useRouter();
   const sizeGuideRef = useRef(null);
 
+  const hasVariants = Boolean(
+    product?.hasVariants !== false &&
+      Array.isArray(product?.variantDetails) &&
+      product.variantDetails.length > 0,
+  );
+
   // 1. Initial State Definition
   const initialVariant = useMemo(() => {
+    if (!hasVariants) return null;
     const withStock = product?.variantDetails?.find((v) =>
-      v.sizes?.some((s) => s.stock > 0),
+      Array.isArray(v.sizes) && v.sizes.length > 0
+        ? v.sizes.some((s) => s.stock > 0)
+        : Number(v.stock) > 0,
     );
     return withStock || product?.variantDetails?.[0];
-  }, [product]);
+  }, [product, hasVariants]);
 
   const [selectedColor, setSelectedColor] = useState(
     initialVariant?.color || "",
   );
 
   const activeVariant = useMemo(() => {
+    if (!hasVariants) return null;
     return product?.variantDetails?.find((v) => v.color === selectedColor);
-  }, [product, selectedColor]);
+  }, [product, selectedColor, hasVariants]);
+
+  const hasSizes = Boolean(
+    activeVariant &&
+      Array.isArray(activeVariant.sizes) &&
+      activeVariant.sizes.length > 0,
+  );
 
   const [selectedSize, setSelectedSize] = useState(
     initialVariant?.sizes?.find((s) => s.stock > 0)?.size ||
@@ -37,12 +54,26 @@ const ProductInteractiveLayer = ({ product }) => {
   );
 
   const activeSizeDetail = useMemo(() => {
+    if (!hasVariants || !hasSizes) return null;
     return activeVariant?.sizes?.find((s) => s.size === selectedSize);
-  }, [activeVariant, selectedSize]);
+  }, [activeVariant, selectedSize, hasVariants, hasSizes]);
 
   const [quantity, setQuantity] = useState(1);
-  const currentStock = activeSizeDetail ? activeSizeDetail.stock : 0;
-  const priceRef = activeSizeDetail || activeVariant?.sizes?.[0];
+  const currentStock = hasVariants
+    ? hasSizes
+      ? activeSizeDetail
+        ? Number(activeSizeDetail.stock || 0)
+        : 0
+      : Number(activeVariant?.stock ?? product?.stock ?? 0)
+    : Number(product?.stock || 0);
+
+  const priceRef = hasVariants
+    ? hasSizes
+      ? activeSizeDetail || activeVariant?.sizes?.[0]
+      : Number(activeVariant?.price) > 0
+        ? activeVariant
+        : { price: product?.price, discount: product?.discount }
+    : { price: product?.price, discount: product?.discount };
 
   const handleQtyChange = (val) => {
     if (val < 1) setQuantity(1);
@@ -53,24 +84,120 @@ const ProductInteractiveLayer = ({ product }) => {
   const { addToCart, isInWishlist, toggleWishlist } = useContext(MyContext);
   const wishlisted = isInWishlist ? isInWishlist(product?._id) : false;
 
-  const handleAddToCart = () => {
-    if (!activeVariant) {
-      toast.error("Please select a color");
-      return;
-    }
+  // Track Meta Pixel & CAPI ViewContent on product view
+  useEffect(() => {
+    if (!product?._id) return;
+    const viewPrice =
+      Number(product?.discount) > 0
+        ? Number(product.discount)
+        : Number(product?.price || 0);
 
-    if (!selectedSize) {
-      toast.error("Please select a size");
-      return;
+    trackFacebookEvent("ViewContent", {
+      content_name: product?.productName,
+      content_category: product?.category,
+      content_ids: [product?._id],
+      content_type: "product",
+      value: viewPrice,
+      currency: "BDT",
+    });
+  }, [product?._id, product?.productName, product?.category, product?.discount, product?.price]);
+
+  const handleAddToCart = () => {
+    if (hasVariants) {
+      if (!activeVariant) {
+        toast.error("Please select a color");
+        return;
+      }
+
+      if (hasSizes && !selectedSize) {
+        toast.error("Please select a size");
+        return;
+      }
     }
 
     if (quantity > currentStock) {
       toast.error("Out of stock");
       return;
     }
-    const result = addToCart(product, activeVariant, selectedSize, quantity);
+    const result = addToCart(
+      product,
+      hasVariants ? activeVariant : null,
+      hasVariants && hasSizes ? selectedSize : null,
+      quantity,
+    );
     if (result) {
       toast.success("Added to cart");
+      const unitPrice =
+        Number(priceRef?.discount) > 0
+          ? Number(priceRef.discount)
+          : Number(priceRef?.price || 0);
+
+      trackFacebookEvent("AddToCart", {
+        content_name: product?.productName,
+        content_category: product?.category,
+        content_ids: [product?._id],
+        content_type: "product",
+        value: unitPrice * quantity,
+        currency: "BDT",
+        contents: [
+          {
+            id: product?._id,
+            quantity: quantity,
+            item_price: unitPrice,
+          },
+        ],
+      });
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (hasVariants) {
+      if (!activeVariant) {
+        toast.error("Please select a color");
+        return;
+      }
+
+      if (hasSizes && !selectedSize) {
+        toast.error("Please select a size");
+        return;
+      }
+    }
+
+    if (quantity > currentStock) {
+      toast.error("Out of stock");
+      return;
+    }
+
+    const result = addToCart(
+      product,
+      hasVariants ? activeVariant : null,
+      hasVariants && hasSizes ? selectedSize : null,
+      quantity,
+    );
+
+    if (result) {
+      const unitPrice =
+        Number(priceRef?.discount) > 0
+          ? Number(priceRef.discount)
+          : Number(priceRef?.price || 0);
+
+      trackFacebookEvent("AddToCart", {
+        content_name: product?.productName,
+        content_category: product?.category,
+        content_ids: [product?._id],
+        content_type: "product",
+        value: unitPrice * quantity,
+        currency: "BDT",
+        contents: [
+          {
+            id: product?._id,
+            quantity: quantity,
+            item_price: unitPrice,
+          },
+        ],
+      });
+
+      router.push("/cart/checkout");
     }
   };
 
@@ -111,87 +238,102 @@ const ProductInteractiveLayer = ({ product }) => {
         </div>
 
         <div className="bg-base-100 p-4 xs:p-5 rounded-box shadow-xs h-fit my-5">
-          {/* 1. COLOR VARIANT SELECTOR */}
-          <div>
-            <h3 className="font-bold text-sm flex items-center gap-1">
-              Color:{" "}
-              <span className="text-neutral-400 font-normal">
-                {selectedColor}
-              </span>
-            </h3>
-            <div className="flex flex-wrap items-center gap-3 mt-2">
-              {product?.variantDetails?.map((variant) => (
-                <button
-                  key={variant.color}
-                  onClick={() => {
-                    setSelectedColor(variant.color);
-                    setSelectedSize(
-                      variant?.sizes?.find((s) => s.stock > 0)?.size || "",
-                    );
-                    setQuantity(1);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <div
-                    className={`size-12 rounded-lg overflow-hidden border ${
-                      selectedColor === variant.color
-                        ? "border-main"
-                        : "border-base-300"
-                    }`}
-                  >
-                    <img
-                      src={variant?.swatchImage}
-                      alt={variant.color}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+          {hasVariants && (
+            <>
+              {/* 1. COLOR VARIANT SELECTOR */}
+              <div>
+                <h3 className="font-bold text-sm flex items-center gap-1">
+                  Color:{" "}
+                  <span className="text-neutral-400 font-normal">
+                    {selectedColor}
+                  </span>
+                </h3>
+                <div className="flex flex-wrap items-center gap-3 mt-2">
+                  {product?.variantDetails?.map((variant) => (
+                    <button
+                      key={variant.color}
+                      onClick={() => {
+                        setSelectedColor(variant.color);
+                        if (
+                          Array.isArray(variant?.sizes) &&
+                          variant.sizes.length > 0
+                        ) {
+                          setSelectedSize(
+                            variant.sizes.find((s) => s.stock > 0)?.size ||
+                              variant.sizes[0]?.size ||
+                              "",
+                          );
+                        } else {
+                          setSelectedSize("");
+                        }
+                        setQuantity(1);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <div
+                        className={`size-12 rounded-lg overflow-hidden border ${
+                          selectedColor === variant.color
+                            ? "border-main"
+                            : "border-base-300"
+                        }`}
+                      >
+                        <img
+                          src={variant?.swatchImage}
+                          alt={variant.color}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          {/* 2. SIZE SELECTOR WITH SIZE GUIDE BUTTON */}
-          <div className="my-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm">
-                Size:{" "}
-                <span className="text-neutral-400 font-normal">
-                  {selectedSize}
-                </span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => sizeGuideRef.current?.showModal()}
-                className="btn btn-ghost btn-xs text-main gap-1 hover:underline"
-              >
-                <LuRuler className="text-sm" /> Size Guide
-              </button>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 mt-2">
-              {activeVariant?.sizes?.map((item) => {
-                const isOutOfStock = item.stock <= 0;
-                return (
-                  <button
-                    key={item.size}
-                    disabled={isOutOfStock}
-                    onClick={() => {
-                      setSelectedSize(item.size);
-                      setQuantity(1);
-                    }}
-                    className={`btn btn-sm btn-square rounded-box transition-all ${
-                      isOutOfStock
-                        ? ""
-                        : selectedSize === item.size
-                          ? "btn-main"
-                          : "btn-outline"
-                    }`}
-                  >
-                    {item.size}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+              {/* 2. SIZE SELECTOR WITH SIZE GUIDE BUTTON (Only if sizes exist for active variant) */}
+              {hasSizes && (
+                <div className="my-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-sm">
+                      Size:{" "}
+                      <span className="text-neutral-400 font-normal">
+                        {selectedSize}
+                      </span>
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => sizeGuideRef.current?.showModal()}
+                      className="btn btn-ghost btn-xs text-main gap-1 hover:underline"
+                    >
+                      <LuRuler className="text-sm" /> Size Guide
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    {activeVariant?.sizes?.map((item) => {
+                      const isOutOfStock = item.stock <= 0;
+                      return (
+                        <button
+                          key={item.size}
+                          disabled={isOutOfStock}
+                          onClick={() => {
+                            setSelectedSize(item.size);
+                            setQuantity(1);
+                          }}
+                          className={`btn btn-sm btn-square rounded-box transition-all ${
+                            isOutOfStock
+                              ? ""
+                              : selectedSize === item.size
+                                ? "btn-main"
+                                : "btn-outline"
+                          }`}
+                        >
+                          {item.size}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
 
           {/* 3. STOCK & QUANTITY CONTROLS */}
           <div className="my-4 pt-2 border-t border-base-300">
@@ -245,20 +387,8 @@ const ProductInteractiveLayer = ({ product }) => {
             </button>
             <button
               disabled={currentStock === 0}
+              onClick={handleBuyNow}
               className={`btn ${currentStock === 0 ? "" : "btn-main"} flex-1`}
-              onClick={() => {
-                const result = addToCart(
-                  product,
-                  activeVariant,
-                  selectedSize,
-                  quantity,
-                  true,
-                );
-                if (result) {
-                  toast.success("Added to cart");
-                  router.push("/cart/checkout");
-                }
-              }}
             >
               Buy Now
             </button>

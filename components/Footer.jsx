@@ -98,10 +98,10 @@ const Footer = () => {
               <ul className="space-y-2.5 text-sm text-neutral-400">
                 <li>
                   <Link
-                    href="/dashboard"
+                    href="/track-order"
                     className="hover:text-white transition-colors duration-200"
                   >
-                    Your Orders
+                    Track Your Orders
                   </Link>
                 </li>
                 <li>
@@ -219,7 +219,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <Link
-                    href="/dashboard"
+                    href="/about"
                     className="hover:text-white transition-colors duration-200"
                   >
                     Sell-Publish with Us
@@ -306,10 +306,14 @@ const Footer = () => {
 
             {/* Social Cards */}
             <div className="flex items-center gap-2.5 flex-wrap justify-center">
-              <a href="https://www.facebook.com/bivasstyle" target="_blank">
-                <button className="btn btn-circle btn-outline">
-                  <FaFacebookF />
-                </button>
+              <a
+                href="https://www.facebook.com/bivasstyle"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Bivas Style on Facebook"
+                className="btn btn-circle btn-outline hover:bg-main hover:border-main text-white"
+              >
+                <FaFacebookF />
               </a>
             </div>
           </div>
@@ -323,6 +327,7 @@ const Footer = () => {
             width={1440}
             height={300}
             src="/assets/logo-title.svg"
+            alt="Bivas Style Watermark Logo"
             className="-mb-12 sm:-mb-22 md:-mb-32"
           />
         </div>

@@ -8,12 +8,40 @@ import { useRouter } from "next/navigation";
 import ShippingForm from "@/components/cart/checkout/ShippingForm";
 import Overview from "@/components/cart/Overview";
 import Spinner from "@/components/skeleton/Spinner";
+import { trackFacebookEvent } from "@/lib/fpixel";
 
 const CheckoutPage = () => {
   const router = useRouter();
   const { cartItems, isHydrated } = useContext(MyContext);
   const [isPending, setIsPending] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
+  const hasTrackedCheckout = useRef(false);
+
+  useEffect(() => {
+    if (isHydrated && cartItems.length > 0 && !hasTrackedCheckout.current) {
+      hasTrackedCheckout.current = true;
+      const totalVal = cartItems.reduce(
+        (sum, item) =>
+          sum + (Number(item.price) || 0) * (Number(item.quantity) || 1),
+        0,
+      );
+      trackFacebookEvent("InitiateCheckout", {
+        content_type: "product",
+        contents: cartItems.map((item) => ({
+          id: item.productId || item.id,
+          quantity: item.quantity,
+          item_price: item.price,
+        })),
+        content_ids: cartItems.map((item) => item.productId || item.id),
+        num_items: cartItems.reduce(
+          (acc, item) => acc + (item.quantity || 1),
+          0,
+        ),
+        value: totalVal,
+        currency: "BDT",
+      });
+    }
+  }, [isHydrated, cartItems]);
 
   useEffect(() => {
     if (isHydrated && cartItems.length === 0 && !orderCompleted) {

@@ -12,6 +12,7 @@ const ProductDeleteModal = ({ ref, id }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Product Deleted");
+      ref.current.close();
     },
     onError: () => {
       toast.error("Product Cannot be Deleted");

@@ -11,9 +11,13 @@ const ProductImages = ({ product, selectedColor }) => {
     const activeVariant = product?.variantDetails?.find(
       (v) => v.color === selectedColor,
     );
-    return activeVariant?.imageGallery?.length > 0
-      ? activeVariant.imageGallery
-      : [];
+    if (activeVariant?.imageGallery?.length > 0) {
+      return activeVariant.imageGallery;
+    }
+    if (product?.productImages?.length > 0) {
+      return product.productImages;
+    }
+    return [];
   }, [product, selectedColor]);
 
   const settings = {

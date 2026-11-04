@@ -6,6 +6,7 @@ import { LuCheck, LuHouse, LuShoppingBag } from "react-icons/lu";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useContext, useEffect } from "react";
 import { MyContext } from "@/context/MyProvider";
+import { trackFacebookEvent } from "@/lib/fpixel";
 
 const PaymentSuccessContent = () => {
   const searchParams = useSearchParams();
@@ -17,6 +18,27 @@ const PaymentSuccessContent = () => {
       clearCart();
     }
   }, [clearCart]);
+
+  useEffect(() => {
+    if (orderId && typeof window !== "undefined") {
+      const alreadyTracked = sessionStorage.getItem(`fb_purchased_${orderId}`);
+      if (!alreadyTracked) {
+        sessionStorage.setItem(`fb_purchased_${orderId}`, "true");
+        trackFacebookEvent(
+          "Purchase",
+          {
+            content_name: "Order Placement",
+            content_type: "product",
+            currency: "BDT",
+          },
+          {
+            eventId: orderId.toString(),
+            skipCapi: true,
+          },
+        );
+      }
+    }
+  }, [orderId]);
 
   return (
     <>

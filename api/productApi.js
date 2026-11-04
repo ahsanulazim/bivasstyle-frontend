@@ -1,5 +1,20 @@
 import { api } from "@/axios/axiosInstance";
 
+export const uploadProductImages = async (files) => {
+  const formData = new FormData();
+  if (Array.isArray(files)) {
+    files.forEach((file) => formData.append("images", file));
+  } else {
+    formData.append("images", files);
+  }
+  const res = await api.post("/products/uploadImages", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
+
 export const createProduct = async (productData) => {
   const res = await api.post("/products/createProduct", productData);
   return res.data;

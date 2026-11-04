@@ -54,11 +54,14 @@ const ProductData = () => {
       product.variantDetails.length > 0
     ) {
       return product.variantDetails.reduce((total, variant) => {
-        const variantStock = (variant.sizes || []).reduce(
-          (sum, s) => sum + Number(s.stock || 0),
-          0,
-        );
-        return total + variantStock;
+        if (Array.isArray(variant.sizes) && variant.sizes.length > 0) {
+          const variantStock = variant.sizes.reduce(
+            (sum, s) => sum + Number(s.stock || 0),
+            0,
+          );
+          return total + variantStock;
+        }
+        return total + Number(variant.stock || 0);
       }, 0);
     }
     return Number(product.stock || 0);

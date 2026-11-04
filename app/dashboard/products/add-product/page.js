@@ -19,7 +19,7 @@ const page = () => {
             className={`btn ${isPending ? "" : "btn-main"}`}
             type="submit"
             disabled={isPending}
-            onClick={() => formRef.current.requestSubmit()}
+            onClick={() => formRef.current?.requestSubmit()}
           >
             {isPending ? (
              <> <span className="loading loading-spinner"></span> Saving...</>

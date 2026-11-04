@@ -147,7 +147,7 @@ const OrderInvoiceModal = ({ ref, modalRef, order }) => {
                       {item.productName}
                     </td>
                     <td className="border border-gray-300 p-2.5">
-                      Color: {item.color} | Size: {item.size}
+                      {[item.color && `Color: ${item.color}`, item.size && `Size: ${item.size}`].filter(Boolean).join(" | ") || "Standard"}
                     </td>
                     <td className="border border-gray-300 p-2.5 text-center">
                       {item.quantity}
