@@ -1,19 +1,19 @@
 import Link from "next/link";
-import { FaMoon } from "react-icons/fa6";
+import { FaMoon, FaStore } from "react-icons/fa6";
 import { LuHouse, LuShoppingBag, LuUser } from "react-icons/lu";
 
 const Dock = () => {
   return (
-    <div className="dock bg-main text-neutral-content sticky lg:hidden bottom-0">
+    <div className="dock bg-main text-neutral-content sticky lg:hidden bottom-0 z-30">
       <Link href="/">
         <LuHouse className="size-[1.2em]" />
         <span className="dock-label">Home</span>
       </Link>
 
-      <button className="">
-        <FaMoon className="size-[1.2em] animate-pulse" />
-        <span className="dock-label">EID 2K26</span>
-      </button>
+      <Link href="/products">
+        <FaStore className="size-[1.2em] animate-pulse" />
+        <span className="dock-label">Shop</span>
+      </Link>
 
       <Link href="/cart">
         <LuShoppingBag className="size-[1.2em]" />

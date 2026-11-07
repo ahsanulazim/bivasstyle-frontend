@@ -15,6 +15,11 @@ export const updateCategory = async ({ id, categoryData }) => {
   return res.data;
 };
 
+export const toggleCategoryFeatured = async ({ id, isFeatured }) => {
+  const res = await api.patch(`/category/toggleFeatured?id=${id}`, { isFeatured });
+  return res.data;
+};
+
 export const deleteCategory = async (id) => {
   const res = await api.delete(`/category/deleteCategory?id=${id}`);
   return res.data;

@@ -43,23 +43,33 @@ const Overview = ({ isCheckout, ref, isPending, paymentMethod }) => {
 
   let calculatedShipping = 0;
   let extraWeightFee = 0;
+  const hasShippingAvailable = Boolean(deliveryAdd || shippingPrice?.isFlatRate);
 
-  if (deliveryAdd && shippingPrice) {
+  if (hasShippingAvailable && shippingPrice) {
     const baseCharge = Number(shippingPrice?.baseCharge || 0);
-    const weightLimit = Number(shippingPrice?.weightLimit || 0);
-    const extraCharge = Number(shippingPrice?.extraCharge || 0);
+    const isFlatRate = Boolean(
+      shippingPrice?.isFlatRate || shippingPrice?.rateType === "flat",
+    );
 
-    if (weightLimit > 0 && totalWeight > weightLimit && extraCharge > 0) {
-      const extraWeight = totalWeight - weightLimit;
-      const extraUnits = Math.ceil(extraWeight);
-      extraWeightFee = extraUnits * extraCharge;
-      calculatedShipping = baseCharge + extraWeightFee;
-    } else {
+    if (isFlatRate) {
       calculatedShipping = baseCharge;
+      extraWeightFee = 0;
+    } else {
+      const weightLimit = Number(shippingPrice?.weightLimit || 0);
+      const extraCharge = Number(shippingPrice?.extraCharge || 0);
+
+      if (weightLimit > 0 && totalWeight > weightLimit && extraCharge > 0) {
+        const extraWeight = totalWeight - weightLimit;
+        const extraUnits = Math.ceil(extraWeight);
+        extraWeightFee = extraUnits * extraCharge;
+        calculatedShipping = baseCharge + extraWeightFee;
+      } else {
+        calculatedShipping = baseCharge;
+      }
     }
   }
 
-  const baseShipping = deliveryAdd ? calculatedShipping : 0;
+  const baseShipping = hasShippingAvailable ? calculatedShipping : 0;
 
   const validateMutation = useMutation({
     mutationFn: validateCouponCode,
@@ -216,10 +226,19 @@ const Overview = ({ isCheckout, ref, isPending, paymentMethod }) => {
           </span>
         </div>
 
-        {deliveryAdd && (
+        {hasShippingAvailable && (
           <div className="flex flex-col gap-0.5">
-            <div className="flex justify-between">
-              <span className="opacity-75">Shipping:</span>
+            <div className="flex justify-between items-center">
+              <span className="opacity-75 flex items-center gap-1.5">
+                Shipping:
+                {Boolean(
+                  shippingPrice?.isFlatRate || shippingPrice?.rateType === "flat",
+                ) && (
+                  <span className="badge badge-xs badge-primary font-normal">
+                    Flat Rate
+                  </span>
+                )}
+              </span>
               <span className="font-bold">
                 {appliedCoupon?.freeShipping ? (
                   <span className="text-success font-bold">

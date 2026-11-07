@@ -18,6 +18,9 @@ const CategoryModalForm = ({
   const [thumbnail, setThumbnail] = useState(
     isEditing && category ? category.coverThumbnail || null : null,
   );
+  const [isFeatured, setIsFeatured] = useState(
+    isEditing && category ? Boolean(category.isFeatured) : false,
+  );
   const [errors, setErrors] = useState({});
 
   const handleNameChange = (e) => {
@@ -77,6 +80,7 @@ const CategoryModalForm = ({
     setName("");
     setSlug("");
     setThumbnail(null);
+    setIsFeatured(false);
     setErrors({});
     modalRef?.current?.close();
     onClose?.();
@@ -101,6 +105,7 @@ const CategoryModalForm = ({
       name: name.trim(),
       slug: slug.trim(),
       thumbnail,
+      isFeatured,
     };
 
     if (isEditing && category?._id) {
@@ -217,6 +222,25 @@ const CategoryModalForm = ({
               />
             </label>
           )}
+        </div>
+
+        {/* Featured Toggle */}
+        <div className="flex items-center justify-between p-3.5 rounded-2xl border border-base-300 bg-base-200/40 hover:bg-base-200/70 transition">
+          <div className="space-y-0.5 pr-2">
+            <div className="flex items-center gap-1.5 font-semibold text-xs">
+              <span>Featured on Homepage</span>
+              <span className="badge badge-xs badge-warning font-semibold">Home</span>
+            </div>
+            <p className="text-[11px] opacity-60">
+              Display this category inside the &ldquo;Popular Categories&rdquo; section on the storefront homepage.
+            </p>
+          </div>
+          <input
+            type="checkbox"
+            className="toggle toggle-primary toggle-sm"
+            checked={isFeatured}
+            onChange={(e) => setIsFeatured(e.target.checked)}
+          />
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-3">

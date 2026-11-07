@@ -116,8 +116,8 @@ export const getProductsByFilters = async (
     limit: limit || 12,
   });
 
-  if (filters.minPrice) query.set("minPrice", filters.minPrice);
-  if (filters.maxPrice) query.set("maxPrice", filters.maxPrice);
+  if (filters.minPrice !== undefined && filters.minPrice !== null && filters.minPrice !== "") query.set("minPrice", filters.minPrice);
+  if (filters.maxPrice !== undefined && filters.maxPrice !== null && filters.maxPrice !== "") query.set("maxPrice", filters.maxPrice);
   if (filters.sizes) query.set("sizes", filters.sizes);
   if (filters.colors) query.set("colors", filters.colors);
   if (filters.stock) query.set("stock", filters.stock);

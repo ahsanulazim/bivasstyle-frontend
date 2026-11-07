@@ -26,10 +26,26 @@ const CartedItems = () => {
               />
               <div className="flex-1">
                 <h3>{item.productName}</h3>
-                <h4 className="text-sm">
-                  Size: <span className="font-bold">{item.size}</span> Color:{" "}
-                  <span className="font-bold">{item.color}</span>
-                </h4>
+                {(item.size || item.color || item.attributeValue) && (
+                  <h4 className="text-sm flex flex-wrap gap-x-3 gap-y-1 my-0.5">
+                    {item.color && (
+                      <span>
+                        Color: <span className="font-bold">{item.color}</span>
+                      </span>
+                    )}
+                    {item.size && (
+                      <span>
+                        Size: <span className="font-bold">{item.size}</span>
+                      </span>
+                    )}
+                    {!item.color && !item.size && item.attributeValue && (
+                      <span>
+                        {item.attributeName || "Option"}:{" "}
+                        <span className="font-bold">{item.attributeValue}</span>
+                      </span>
+                    )}
+                  </h4>
+                )}
                 <h4 className="text-sm">
                   Price:{" "}
                   <span className="font-bold">

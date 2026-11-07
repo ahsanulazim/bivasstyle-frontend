@@ -77,6 +77,8 @@ const SocketProvider = ({ children }) => {
     const invalidateShipping = (payload) => {
       setLastEvent({ event: "shipping:updated", payload, timestamp: new Date() });
       queryClient.invalidateQueries({ queryKey: ["shippingRates"] });
+      queryClient.invalidateQueries({ queryKey: ["shippingSettings"] });
+      queryClient.invalidateQueries({ queryKey: ["districtShippingRate"] });
     };
 
     const invalidateAttributes = (payload) => {
@@ -122,6 +124,8 @@ const SocketProvider = ({ children }) => {
         queryClient.invalidateQueries({ queryKey: ["categories"] });
       } else if (type === "shipping") {
         queryClient.invalidateQueries({ queryKey: ["shippingRates"] });
+        queryClient.invalidateQueries({ queryKey: ["shippingSettings"] });
+        queryClient.invalidateQueries({ queryKey: ["districtShippingRate"] });
       } else if (type === "attribute") {
         queryClient.invalidateQueries({ queryKey: ["attributes"] });
       } else if (type === "variation") {

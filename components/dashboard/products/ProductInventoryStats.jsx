@@ -19,10 +19,13 @@ const ProductInventoryStats = ({ products = [] }) => {
     let stock = 0;
     if (Array.isArray(p.variantDetails) && p.variantDetails.length > 0) {
       stock = p.variantDetails.reduce((sum, v) => {
-        return (
-          sum +
-          (v.sizes || []).reduce((sSum, s) => sSum + Number(s.stock || 0), 0)
-        );
+        if (Array.isArray(v.sizes) && v.sizes.length > 0) {
+          return (
+            sum +
+            v.sizes.reduce((sSum, s) => sSum + Number(s.stock || 0), 0)
+          );
+        }
+        return sum + Number(v.stock || 0);
       }, 0);
     } else {
       stock = Number(p.stock || 0);

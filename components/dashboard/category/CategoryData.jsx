@@ -1,19 +1,24 @@
 "use client";
 
+import { toggleCategoryFeatured } from "@/api/categoryApi";
 import { MyContext } from "@/context/MyProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { useContext, useMemo, useRef, useState } from "react";
 import {
   LuFolder,
   LuFolderOpen,
   LuSearch,
+  LuSparkles,
   LuSquarePen,
   LuTrash2,
 } from "react-icons/lu";
+import { toast } from "react-toastify";
 import CategoryDeleteModal from "./CategoryDeleteModal";
 import CategoryModal from "./CategoryModal";
 
 const CategoryData = () => {
+  const queryClient = useQueryClient();
   const {
     categories = [],
     categoriesLoading,
@@ -24,9 +29,30 @@ const CategoryData = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeEditCategory, setActiveEditCategory] = useState(null);
   const [activeDeleteCategory, setActiveDeleteCategory] = useState(null);
+  const [togglingId, setTogglingId] = useState(null);
 
   const editModalRef = useRef(null);
   const deleteModalRef = useRef(null);
+
+  const toggleMutation = useMutation({
+    mutationFn: toggleCategoryFeatured,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast.success(data?.message || "Category featured status updated");
+      setTogglingId(null);
+    },
+    onError: (err) => {
+      toast.error(
+        err.response?.data?.message || "Failed to update category status",
+      );
+      setTogglingId(null);
+    },
+  });
+
+  const handleToggleFeatured = (id, nextState) => {
+    setTogglingId(id);
+    toggleMutation.mutate({ id, isFeatured: nextState });
+  };
 
   const handleOpenEdit = (category) => {
     setActiveEditCategory(category);
@@ -92,6 +118,7 @@ const CategoryData = () => {
               <th>Category</th>
               <th>Slug</th>
               <th>Products</th>
+              <th>Featured (Home)</th>
               <th>Created</th>
               <th className="text-right">Actions</th>
             </tr>
@@ -100,20 +127,20 @@ const CategoryData = () => {
             {categoriesLoading ? (
               [...Array(4)].map((_, i) => (
                 <tr key={i}>
-                  <td colSpan={6}>
+                  <td colSpan={7}>
                     <div className="skeleton h-8 w-full"></div>
                   </td>
                 </tr>
               ))
             ) : categoriesError ? (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-error text-xs">
+                <td colSpan={7} className="text-center py-8 text-error text-xs">
                   Failed to load categories
                 </td>
               </tr>
             ) : filteredCategories.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-10">
+                <td colSpan={7} className="text-center py-10">
                   <LuFolder className="mx-auto size-8 opacity-30" />
                   <p className="mt-2 text-sm opacity-60">
                     {searchQuery
@@ -159,6 +186,33 @@ const CategoryData = () => {
                       {getProductCount(category)} item
                       {getProductCount(category) === 1 ? "" : "s"}
                     </span>
+                  </td>
+
+                  {/* Featured on Homepage */}
+                  <td>
+                    <label className="cursor-pointer inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-primary toggle-sm"
+                        checked={Boolean(category.isFeatured)}
+                        disabled={
+                          toggleMutation.isPending &&
+                          togglingId === category._id
+                        }
+                        onChange={(e) =>
+                          handleToggleFeatured(category._id, e.target.checked)
+                        }
+                      />
+                      {category.isFeatured ? (
+                        <span className="badge badge-sm badge-warning gap-1 font-semibold">
+                          <LuSparkles className="size-3" /> Featured
+                        </span>
+                      ) : (
+                        <span className="badge badge-sm badge-ghost opacity-60">
+                          Standard
+                        </span>
+                      )}
+                    </label>
                   </td>
 
                   {/* Date */}

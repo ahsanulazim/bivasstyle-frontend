@@ -5,6 +5,16 @@ export const getAllShippingRates = async () => {
   return res.data;
 };
 
+export const getShippingSettings = async () => {
+  const res = await api.get("/shippingRates/getShippingSettings");
+  return res.data;
+};
+
+export const updateShippingSettings = async (settingsData) => {
+  const res = await api.put("/shippingRates/updateShippingSettings", settingsData);
+  return res.data;
+};
+
 export const createShippingRate = async (shippingData) => {
   const res = await api.post("/shippingRates/createShippingRate", shippingData);
   return res.data;

@@ -36,6 +36,7 @@ const QuickStockModal = ({ product, isOpen, onClose }) => {
         stock: Number(stockVal),
         color: selectedVariant.color,
         size: selectedVariant.size,
+        attributeValue: selectedVariant.attributeValue,
       });
     } else {
       mutation.mutate({
@@ -74,7 +75,7 @@ const QuickStockModal = ({ product, isOpen, onClose }) => {
                 Select Variant / Size to Adjust:
               </label>
               <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-base-200/50 rounded-xl border border-base-300">
-                {product.variantDetails.map((v) => {
+                {product.variantDetails.map((v, vIdx) => {
                   if (Array.isArray(v.sizes) && v.sizes.length > 0) {
                     return v.sizes.map((s, idx) => {
                       const isSelected =
@@ -82,9 +83,13 @@ const QuickStockModal = ({ product, isOpen, onClose }) => {
                         selectedVariant?.size === s.size;
                       return (
                         <div
-                          key={`${v.color}-${s.size}-${idx}`}
+                          key={`${v.color || "var"}-${s.size}-${idx}`}
                           onClick={() => {
-                            setSelectedVariant({ color: v.color, size: s.size });
+                            setSelectedVariant({
+                              color: v.color,
+                              size: s.size,
+                              label: `${v.color ? v.color + " - " : ""}Size ${s.size}`,
+                            });
                             setStockVal(s.stock);
                           }}
                           className={`p-2.5 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all ${
@@ -94,7 +99,7 @@ const QuickStockModal = ({ product, isOpen, onClose }) => {
                           }`}
                         >
                           <span>
-                            {v.color} - Size {s.size}
+                            {v.color ? `${v.color} - ` : ""}Size {s.size}
                           </span>
                           <span className="badge badge-sm badge-neutral">
                             {s.stock} in stock
@@ -103,14 +108,75 @@ const QuickStockModal = ({ product, isOpen, onClose }) => {
                       );
                     });
                   }
+                  if (v.size && !v.color) {
+                    const isSelected =
+                      selectedVariant?.size === v.size &&
+                      !selectedVariant?.color;
+                    return (
+                      <div
+                        key={`sz-${v.size}-${vIdx}`}
+                        onClick={() => {
+                          setSelectedVariant({
+                            size: v.size,
+                            label: `Size ${v.size}`,
+                          });
+                          setStockVal(v.stock ?? 0);
+                        }}
+                        className={`p-2.5 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all ${
+                          isSelected
+                            ? "bg-primary text-primary-content font-bold shadow-xs"
+                            : "hover:bg-base-300/60"
+                        }`}
+                      >
+                        <span>Size {v.size}</span>
+                        <span className="badge badge-sm badge-neutral">
+                          {v.stock ?? 0} in stock
+                        </span>
+                      </div>
+                    );
+                  }
+                  if (v.attributeValue || v.attributeName) {
+                    const attrVal = v.attributeValue || v.name;
+                    const isSelected =
+                      selectedVariant?.attributeValue === attrVal;
+                    return (
+                      <div
+                        key={`attr-${attrVal}-${vIdx}`}
+                        onClick={() => {
+                          setSelectedVariant({
+                            attributeValue: attrVal,
+                            label: `${v.attributeName || "Option"}: ${attrVal}`,
+                          });
+                          setStockVal(v.stock ?? 0);
+                        }}
+                        className={`p-2.5 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all ${
+                          isSelected
+                            ? "bg-primary text-primary-content font-bold shadow-xs"
+                            : "hover:bg-base-300/60"
+                        }`}
+                      >
+                        <span>
+                          {v.attributeName ? `${v.attributeName}: ` : ""}
+                          {attrVal}
+                        </span>
+                        <span className="badge badge-sm badge-neutral">
+                          {v.stock ?? 0} in stock
+                        </span>
+                      </div>
+                    );
+                  }
                   const isSelected =
                     selectedVariant?.color === v.color &&
                     !selectedVariant?.size;
                   return (
                     <div
-                      key={v.color}
+                      key={v.color || vIdx}
                       onClick={() => {
-                        setSelectedVariant({ color: v.color, size: null });
+                        setSelectedVariant({
+                          color: v.color,
+                          size: null,
+                          label: `${v.color} (Color Only)`,
+                        });
                         setStockVal(v.stock ?? 0);
                       }}
                       className={`p-2.5 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all ${
@@ -133,7 +199,7 @@ const QuickStockModal = ({ product, isOpen, onClose }) => {
           <div>
             <label className="text-xs font-semibold block mb-1 text-base-content/70">
               {selectedVariant
-                ? `New Stock for ${selectedVariant.color} (${selectedVariant.size})`
+                ? `New Stock for ${selectedVariant.label || selectedVariant.color || selectedVariant.size}`
                 : "New Stock Quantity"}
             </label>
             <input

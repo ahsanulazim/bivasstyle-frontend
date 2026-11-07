@@ -46,9 +46,7 @@ const Sidebar = ({ children }) => {
         {/* Page content here */}
         <main className="bg-base-200">{children}</main>
         <Footer />
-        <div className="relative">
-          <Dock />
-        </div>
+        <Dock />
       </div>
       <div className="drawer-side z-50">
         <label

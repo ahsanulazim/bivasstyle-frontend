@@ -2,12 +2,16 @@
 import { getAllCategories } from "@/api/categoryApi";
 import { getAllLocations } from "@/api/locationApi";
 import { getAllProducts } from "@/api/productApi";
-import { getAllShippingRates, getShippingRateByDistrict } from "@/api/shippingApi";
+import {
+  getAllShippingRates,
+  getShippingRateByDistrict,
+  getShippingSettings,
+} from "@/api/shippingApi";
 import { api } from "@/axios/axiosInstance";
 import { auth } from "@/firebase/firebase.config";
 import { useQuery } from "@tanstack/react-query";
 import { onAuthStateChanged } from "firebase/auth";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 export const MyContext = createContext();
@@ -110,30 +114,35 @@ const MyProvider = ({ children }) => {
   // 3. Add function to update cart items
   const addToCart = (product, variant, size, quantity) => {
     const hasVariant = Boolean(variant);
-    const hasSize = Boolean(size);
-    const cartItemId = hasVariant
-      ? hasSize
-        ? `${product._id}-${variant.color}-${size}`
-        : `${product._id}-${variant.color}`
-      : `${product._id}`;
+    const resolvedColor = variant?.color || null;
+    const resolvedSize = size || variant?.size || null;
+    const resolvedAttr =
+      variant?.attributeValue ||
+      (!resolvedColor && !resolvedSize ? variant?.name : null) ||
+      null;
+
+    let cartItemId = `${product._id}`;
+    if (resolvedColor) cartItemId += `-${resolvedColor}`;
+    if (resolvedSize) cartItemId += `-${resolvedSize}`;
+    if (!resolvedColor && !resolvedSize && resolvedAttr)
+      cartItemId += `-${resolvedAttr}`;
 
     // Check if product variant already exists in cart
     const existingCartItem = cartItems.find((item) => item.id === cartItemId);
 
-    const activeSizeDetail = hasSize
-      ? variant?.sizes?.find((s) => s.size === size)
-      : null;
+    const activeSizeDetail =
+      resolvedSize && Array.isArray(variant?.sizes) && variant.sizes.length > 0
+        ? variant.sizes.find((s) => s.size === resolvedSize)
+        : null;
 
     const stock = hasVariant
-      ? hasSize
-        ? activeSizeDetail
-          ? Number(activeSizeDetail.stock || 0)
-          : 0
+      ? activeSizeDetail
+        ? Number(activeSizeDetail.stock || 0)
         : Number(variant?.stock ?? product?.stock ?? 0)
       : Number(product?.stock || 0);
 
     const itemPrice = hasVariant
-      ? hasSize
+      ? activeSizeDetail
         ? Number(activeSizeDetail?.discount) > 0
           ? Number(activeSizeDetail.discount)
           : Number(activeSizeDetail?.price) > 0
@@ -173,8 +182,10 @@ const MyProvider = ({ children }) => {
         id: cartItemId,
         productId: product._id,
         productName: product.productName,
-        color: variant?.color || null,
-        size: size || null,
+        color: resolvedColor,
+        size: resolvedSize,
+        attributeName: variant?.attributeName || null,
+        attributeValue: resolvedAttr,
         quantity: quantity,
         price: itemPrice,
         weight: Number(product?.weight || 0),
@@ -279,23 +290,39 @@ const MyProvider = ({ children }) => {
     queryFn: getAllShippingRates,
   });
 
+  // fetch shipping settings (global flat rate, etc.)
+  const { data: shippingSettings, isLoading: shippingSettingsLoading } =
+    useQuery({
+      queryKey: ["shippingSettings"],
+      queryFn: getShippingSettings,
+    });
+
   const [deliveryAdd, setDeliveryAdd] = useState(null);
 
-  // get delivery charge
-  const [shippingPrice, setShippingPrice] = useState(null);
+  // fetch shipping rate for selected district
+  const { data: districtShippingRate } = useQuery({
+    queryKey: ["districtShippingRate", deliveryAdd],
+    queryFn: () => getShippingRateByDistrict(deliveryAdd),
+    enabled: Boolean(deliveryAdd),
+  });
 
-  useEffect(() => {
-    if (deliveryAdd) {
-      getShippingRateByDistrict(deliveryAdd)
-        .then((data) => setShippingPrice(data))
-        .catch((err) => {
-          console.error("Failed to fetch shipping rate:", err);
-          setShippingPrice(null);
-        });
-    } else {
-      setShippingPrice(null);
+  const shippingPrice = useMemo(() => {
+    if (shippingSettings?.isGlobalFlatRateEnabled) {
+      return {
+        _id: "global_flat_rate",
+        companyName:
+          shippingSettings.globalFlatRateTitle || "Standard Delivery",
+        baseCharge: Number(shippingSettings.globalFlatRateAmount || 0),
+        extraCharge: 0,
+        weightLimit: 0,
+        isFlatRate: true,
+        rateType: "flat",
+        status: true,
+        location: [{ value: "all", label: "All Areas (Global Flat Rate)" }],
+      };
     }
-  }, [deliveryAdd]);
+    return districtShippingRate || null;
+  }, [shippingSettings, districtShippingRate]);
 
   // categories
   const {
@@ -332,6 +359,8 @@ const MyProvider = ({ children }) => {
     locationsLoading,
     shippingRates,
     shippingRatesLoading,
+    shippingSettings,
+    shippingSettingsLoading,
     deliveryAdd,
     setDeliveryAdd,
     shippingPrice,

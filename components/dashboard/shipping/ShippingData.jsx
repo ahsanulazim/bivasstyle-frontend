@@ -43,10 +43,11 @@ const ShippingData = () => {
           <thead>
             <tr className="bg-base-200">
               <th>Company</th>
+              <th>Rate Type</th>
               <th>Location</th>
-              <th>Base Charge</th>
+              <th>Base / Flat Fee</th>
               <th>Extra Charge</th>
-              <th>Weight Limit (KG)</th>
+              <th>Weight Limit</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -54,76 +55,107 @@ const ShippingData = () => {
           <tbody>
             {shippingRatesLoading ? (
               <tr>
-                <td colSpan={7} className="text-center py-6">
+                <td colSpan={8} className="text-center py-6">
                   <span className="loading loading-spinner"></span> Loading shipping rates...
                 </td>
               </tr>
             ) : !shippingRates || shippingRates.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-6 text-base-content/60">
-                  No shipping rates found. Click &quot;Add Rates&quot; to create one.
+                <td colSpan={8} className="text-center py-6 text-base-content/60">
+                  No shipping rates found. Click &quot;Add Courier Rate&quot; to create one.
                 </td>
               </tr>
             ) : (
-              shippingRates.map((rate) => (
-                <tr key={rate._id} className="hover">
-                  <td>
-                    {rate.companyLogo ? (
-                      <div className="flex items-center gap-3">
-                        <Image
-                          src={rate.companyLogo}
-                          alt={rate.companyName || "Company logo"}
-                          width={80}
-                          height={30}
-                          className="object-contain max-h-8 w-auto rounded"
-                        />
-                        <span className="font-semibold text-xs opacity-75">
-                          {rate.companyName}
+              shippingRates.map((rate) => {
+                const isFlat = Boolean(
+                  rate.isFlatRate || rate.rateType === "flat",
+                );
+                return (
+                  <tr key={rate._id} className="hover">
+                    <td>
+                      {rate.companyLogo ? (
+                        <div className="flex items-center gap-3">
+                          <Image
+                            src={rate.companyLogo}
+                            alt={rate.companyName || "Company logo"}
+                            width={80}
+                            height={30}
+                            className="object-contain max-h-8 w-auto rounded"
+                          />
+                          <span className="font-semibold text-xs opacity-75">
+                            {rate.companyName}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="font-semibold">{rate.companyName}</span>
+                      )}
+                    </td>
+                    <td>
+                      {isFlat ? (
+                        <span className="badge badge-primary badge-sm font-medium">
+                          Flat Rate
+                        </span>
+                      ) : (
+                        <span className="badge badge-ghost badge-sm opacity-75">
+                          Weight Based
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <span className="text-sm">
+                        {Array.isArray(rate.location)
+                          ? rate.location.map((item) => item.label).join(", ")
+                          : "N/A"}
+                      </span>
+                    </td>
+                    <td className="font-semibold">
+                      <TakaSymbol /> {rate.baseCharge}
+                    </td>
+                    <td>
+                      {isFlat ? (
+                        <span className="text-xs text-base-content/50 italic">
+                          None (Flat)
+                        </span>
+                      ) : (
+                        <>
+                          <TakaSymbol /> {rate.extraCharge || 0} / KG
+                        </>
+                      )}
+                    </td>
+                    <td>
+                      {isFlat ? (
+                        <span className="text-xs text-base-content/50 italic">
+                          No limit
+                        </span>
+                      ) : (
+                        `${rate.weightLimit || 1} KG`
+                      )}
+                    </td>
+                    <td>
+                      <div
+                        className={`badge badge-soft ${
+                          rate?.status
+                            ? "border-success badge-success"
+                            : "border-error badge-error"
+                        }`}
+                      >
+                        <div className="inline-grid *:[grid-area:1/1]">
+                          <div
+                            className={`status animate-ping ${
+                              rate?.status ? "status-success" : "status-error"
+                            }`}
+                          ></div>
+                          <div
+                            className={`status ${
+                              rate?.status ? "status-success" : "status-error"
+                            }`}
+                          ></div>
+                        </div>
+                        <span className="ml-1">
+                          {rate?.status ? "Active" : "Inactive"}
                         </span>
                       </div>
-                    ) : (
-                      <span className="font-semibold">{rate.companyName}</span>
-                    )}
-                  </td>
-                  <td>
-                    <span className="text-sm">
-                      {Array.isArray(rate.location)
-                        ? rate.location.map((item) => item.label).join(", ")
-                        : "N/A"}
-                    </span>
-                  </td>
-                  <td className="font-semibold">
-                    <TakaSymbol /> {rate.baseCharge}
-                  </td>
-                  <td>
-                    <TakaSymbol /> {rate.extraCharge || 0}
-                  </td>
-                  <td>{rate.weightLimit || 1} KG</td>
-                  <td>
-                    <div
-                      className={`badge badge-soft ${
-                        rate?.status
-                          ? "border-success badge-success"
-                          : "border-error badge-error"
-                      }`}
-                    >
-                      <div className="inline-grid *:[grid-area:1/1]">
-                        <div
-                          className={`status animate-ping ${
-                            rate?.status ? "status-success" : "status-error"
-                          }`}
-                        ></div>
-                        <div
-                          className={`status ${
-                            rate?.status ? "status-success" : "status-error"
-                          }`}
-                        ></div>
-                      </div>
-                      <span className="ml-1">
-                        {rate?.status ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-                  </td>
+                    </td>
                   <td>
                     <div className="flex gap-2">
                       <button
@@ -144,9 +176,10 @@ const ShippingData = () => {
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
+              );
+            })
+          )}
+        </tbody>
         </table>
       </div>
 

@@ -28,15 +28,41 @@ const Filter = ({ category }) => {
     queryFn: () => fetchFilters(category),
   });
 
-  const [price, setPrice] = useState([0, 10000]);
+  const categoryMax = Math.max(Number(filters?.maxPrice || 0), 0);
+  const maxPriceLimit = categoryMax > 0 ? categoryMax : 10000;
+
+  const [price, setPrice] = useState([0, maxPriceLimit]);
 
   useEffect(() => {
-    if (filters?.maxPrice) {
-      const minP = Number(searchParams.get("minPrice") || filters?.minPrice || 0);
-      const maxP = Number(searchParams.get("maxPrice") || filters?.maxPrice || 10000);
-      setPrice([minP, maxP]);
+    const minParam = searchParams.get("minPrice");
+    const maxParam = searchParams.get("maxPrice");
+
+    const currentMin =
+      minParam !== null && minParam !== "" ? Math.max(0, Number(minParam)) : 0;
+    const currentMax =
+      maxParam !== null && maxParam !== ""
+        ? Math.min(maxPriceLimit, Math.max(currentMin, Number(maxParam)))
+        : maxPriceLimit;
+
+    setPrice([currentMin, currentMax]);
+  }, [filters, searchParams, maxPriceLimit]);
+
+  // Update price in query string
+  const updatePriceQuery = (minVal, maxVal) => {
+    const query = new URLSearchParams(searchParams.toString());
+    if (minVal > 0) {
+      query.set("minPrice", minVal);
+    } else {
+      query.delete("minPrice");
     }
-  }, [filters, searchParams]);
+    if (maxVal < maxPriceLimit) {
+      query.set("maxPrice", maxVal);
+    } else {
+      query.delete("maxPrice");
+    }
+    query.set("page", "1");
+    router.push(`${basePath}?${query.toString()}`);
+  };
 
   // Update query string
   const updateQuery = (key, value) => {
@@ -98,16 +124,25 @@ const Filter = ({ category }) => {
                     <h4 className="text-lg font-bold">Price</h4>
                     <div className="divider mt-0"></div>
                     <div>
-                      {filters?.maxPrice ? (
+                      {isLoading ? (
+                        <div className="h-4 bg-base-300 animate-pulse rounded-full w-full my-3" />
+                      ) : (
                         <Range
-                          step={50}
-                          min={filters?.minPrice || 0}
-                          max={filters?.maxPrice || 10000}
+                          step={
+                            maxPriceLimit % 50 === 0
+                              ? 50
+                              : maxPriceLimit % 10 === 0
+                              ? 10
+                              : 1
+                          }
+                          min={0}
+                          max={maxPriceLimit}
                           values={price}
                           onChange={(values) => {
                             setPrice(values);
-                            updateQuery("minPrice", values[0]);
-                            updateQuery("maxPrice", values[1]);
+                          }}
+                          onFinalChange={(values) => {
+                            updatePriceQuery(values[0], values[1]);
                           }}
                           renderTrack={({ props, children }) => (
                             <div
@@ -125,7 +160,7 @@ const Filter = ({ category }) => {
                             />
                           )}
                         />
-                      ) : null}
+                      )}
                       <div className="flex items-center justify-between mt-5 gap-10">
                         <span>
                           <TakaSymbol />
