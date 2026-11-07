@@ -20,7 +20,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="site-footer bg-main-dark text-white border-t border-neutral-800 mt-16 font-dm-sans">
+    <footer className="site-footer bg-main-dark text-white border-t border-neutral-800 font-dm-sans">
       {/* 1. Main Footer Widgets (4 Columns) */}
       <div className="site-footer-row footer-widgets border-b border-neutral-50/10">
         <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">

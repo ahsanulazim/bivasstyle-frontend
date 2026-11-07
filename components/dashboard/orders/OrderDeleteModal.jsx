@@ -9,6 +9,7 @@ const OrderDeleteModal = ({ ref, id }) => {
     mutationFn: deleteOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      ref.current.close();
       toast.success("Order Deleted");
     },
     onError: () => {
